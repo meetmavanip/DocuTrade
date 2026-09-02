@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipment Details — DocuTrade</title>
+  <meta name="description" content="View shipment details including documents, timeline, tracking map, and blockchain proof.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tracking.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item active"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+          <div>
+            <h1 class="topbar-title">EXP-IND-2026-00981</h1>
+            <div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><a href="shipments.html">Shipments</a><span class="separator">›</span><span class="current">EXP-IND-2026-00981</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          
+          <button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button>
+          <div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Header -->
+        <div class="page-header">
+          <div class="page-header-left">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <h2 class="page-title">Shipment Details</h2>
+              <span class="badge badge-dot badge-transit">In Transit</span>
+              <span class="badge badge-blockchain">⛓ Anchored</span>
+            </div>
+            <p class="page-subtitle">Rajkot, Gujarat, India → Dubai, UAE · Created Aug 28, 2026</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline btn-sm" id="qrBtn">📱 QR Code</button>
+            <button class="btn btn-outline btn-sm" onclick="window.open('public-verify.html?id=EXP-IND-2026-00981')">🔗 Public Link</button>
+            <button class="btn btn-secondary btn-sm" id="updateStatusBtn">Update Status</button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="detailTabs">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="documents">Documents (5)</button>
+          <button class="tab" data-tab="tracking">Tracking</button>
+          <button class="tab" data-tab="timeline">Timeline</button>
+          <button class="tab" data-tab="blockchain">Blockchain</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-panel active" id="tab-overview">
+          <div class="grid-2 gap-6">
+            <!-- Shipment Info -->
+            <div class="card">
+              <div class="card-header"><h4>Shipment Information</h4></div>
+              <div class="card-body">
+                <div class="detail-grid">
+                  <div class="detail-row"><span class="detail-label">Shipment ID</span><span class="detail-value mono">EXP-IND-2026-00981</span></div>
+                  <div class="detail-row"><span class="detail-label">Status</span><span class="badge badge-dot badge-transit">In Transit</span></div>
+                  <div class="detail-row"><span class="detail-label">Origin</span><span class="detail-value">Rajkot, Gujarat, India</span></div>
+                  <div class="detail-row"><span class="detail-label">Destination</span><span class="detail-value">Dubai, UAE</span></div>
+                  <div class="detail-row"><span class="detail-label">Port of Loading</span><span class="detail-value">Mundra Port</span></div>
+                  <div class="detail-row"><span class="detail-label">Port of Discharge</span><span class="detail-value">Jebel Ali Port</span></div>
+                  <div class="detail-row"><span class="detail-label">Departure</span><span class="detail-value">Aug 29, 2026</span></div>
+                  <div class="detail-row"><span class="detail-label">ETA</span><span class="detail-value">Sep 02, 2026</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trade Info -->
+            <div class="card">
+              <div class="card-header"><h4>Trade Details</h4></div>
+              <div class="card-body">
+                <div class="detail-grid">
+                  <div class="detail-row"><span class="detail-label">Exporter</span><span class="detail-value">ABC Manufacturing Pvt. Ltd.</span></div>
+                  <div class="detail-row"><span class="detail-label">Buyer</span><span class="detail-value">XYZ Imports LLC</span></div>
+                  <div class="detail-row"><span class="detail-label">Incoterms</span><span class="detail-value">FOB — Free on Board</span></div>
+                  <div class="detail-row"><span class="detail-label">Currency</span><span class="detail-value">USD</span></div>
+                  <div class="detail-row"><span class="detail-label">Total Value</span><span class="detail-value" style="font-size: var(--text-lg); color: var(--color-cyan-400);">$284,500.00</span></div>
+                  <div class="detail-row"><span class="detail-label">Product Category</span><span class="detail-value">Industrial Machinery Parts</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Table -->
+          <div class="card mt-6">
+            <div class="card-header"><h4>Products</h4></div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-container" style="border: none; border-radius: 0;">
+                <table class="table">
+                  <thead><tr><th>Product</th><th>HS Code</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr></thead>
+                  <tbody>
+                    <tr><td>Stainless Steel Flanges (ASTM A182 F304)</td><td class="font-mono text-sm">7307.19</td><td>500 pcs</td><td>$325.00</td><td>$162,500.00</td></tr>
+                    <tr><td>Alloy Steel Pipe Fittings (ASTM A234 WPB)</td><td class="font-mono text-sm">7307.93</td><td>200 pcs</td><td>$610.00</td><td>$122,000.00</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Map -->
+          <div class="card mt-6">
+            <div class="card-header"><h4>🗺️ Current Location</h4><a href="tracking.html?id=EXP-IND-2026-00981" class="btn btn-ghost btn-sm">Full Map →</a></div>
+            <div class="card-body" style="padding: 0;">
+              <div class="map-container" style="border: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+                <div class="map-demo-banner">⚠ DEMO GPS DATA</div>
+                <div class="map-main" id="overviewMap" style="height: 320px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div class="tab-panel" id="tab-documents">
+          <div class="page-header" style="margin-bottom: var(--space-4);">
+            <div></div>
+            <button class="btn btn-primary btn-sm seller-only" id="uploadDocBtn">📤 Upload Document</button>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr><th>Document</th><th>Type</th><th>Version</th><th>SHA-256</th><th>Status</th><th>Blockchain</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Commercial Invoice</strong><br><span class="text-xs text-secondary">invoice_00981.pdf · 245 KB</span></td>
+                  <td><span class="badge badge-exporter">Invoice</span></td>
+                  <td>v2</td>
+                  <td><div class="hash-display" style="max-width: 200px;">8a92b71f...3c4e<button class="copy-btn" title="Copy hash">📋</button></div></td>
+                  <td><span class="badge badge-dot badge-approved">Approved</span></td>
+                  <td><span class="badge badge-blockchain">⛓ 0x7f3a...b2</span></td>
+                  <td><button class="btn btn-ghost btn-sm">View</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Packing List</strong><br><span class="text-xs text-secondary">packing_list_00981.pdf · 180 KB</span></td>
+                  <td><span class="badge badge-exporter">Packing</span></td>
+                  <td>v1</td>
+                  <td><div class="hash-display" style="max-width: 200px;">b3f1c29a...9d7b<button class="copy-btn" title="Copy">📋</button></div></td>
+                  <td><span class="badge badge-dot badge-approved">Approved</span></td>
+                  <td><span class="badge badge-blockchain">⛓ 0x4e2c...a1</span></td>
+                  <td><button class="btn btn-ghost btn-sm">View</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Certificate of Origin</strong><br><span class="text-xs text-secondary">coo_00981.pdf · 312 KB</span></td>
+                  <td><span class="badge badge-inspector">Certificate</span></td>
+                  <td>v1</td>
+                  <td><div class="hash-display" style="max-width: 200px;">c7a42d9e...6f1a<button class="copy-btn" title="Copy">📋</button></div></td>
+                  <td><span class="badge badge-dot badge-approved">Approved</span></td>
+                  <td><span class="badge badge-blockchain">⛓ 0x9b1d...c3</span></td>
+                  <td><button class="btn btn-ghost btn-sm">View</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Quality Certificate</strong><br><span class="text-xs text-secondary">quality_cert_00981.pdf · 420 KB</span></td>
+                  <td><span class="badge badge-inspector">Quality</span></td>
+                  <td>v1</td>
+                  <td><div class="hash-display" style="max-width: 200px;">d5e81b3c...4a2f<button class="copy-btn" title="Copy">📋</button></div></td>
+                  <td><span class="badge badge-dot badge-approved">Approved</span></td>
+                  <td><span class="badge badge-blockchain">⛓ 0x2c7f...e4</span></td>
+                  <td><button class="btn btn-ghost btn-sm">View</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Insurance Certificate</strong><br><span class="text-xs text-secondary">insurance_00981.pdf · 156 KB</span></td>
+                  <td><span class="badge badge-logistics">Insurance</span></td>
+                  <td>v1</td>
+                  <td><div class="hash-display" style="max-width: 200px;">e9f72a5d...8b3c<button class="copy-btn" title="Copy">📋</button></div></td>
+                  <td><span class="badge badge-dot badge-approved">Approved</span></td>
+                  <td><span class="badge badge-blockchain">⛓ 0x6a3e...f5</span></td>
+                  <td><button class="btn btn-ghost btn-sm">View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Document version history example -->
+          <div class="card mt-6">
+            <div class="card-header"><h4>📄 Commercial Invoice — Version History</h4></div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot completed"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Version 2 — <span class="badge badge-dot badge-approved">Approved</span></div>
+                    <div class="timeline-meta"><span>Aug 29, 2026 · 10:42 AM</span><span>By Inspector Patel</span></div>
+                    <div class="timeline-description">Corrected invoice with updated quantities. SHA-256 anchored on Arbitrum.</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot error"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Version 1 — <span class="badge badge-dot badge-superseded">Superseded</span></div>
+                    <div class="timeline-meta"><span>Aug 28, 2026 · 3:15 PM</span><span>By Exporter Demo User</span></div>
+                    <div class="timeline-description">Initial invoice upload. Rejected due to incorrect quantity for item #2.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tracking Tab -->
+        <div class="tab-panel" id="tab-tracking">
+          <div class="tracking-layout">
+            <div>
+              <div class="map-container">
+                <div class="map-demo-banner">⚠ DEMO GPS DATA</div>
+                <div class="map-main" id="trackingMap"></div>
+              </div>
+            </div>
+            <div class="tracking-panel">
+              <div class="location-card">
+                <div class="location-card-header">
+                  <h4>🚢 Current Position</h4>
+                  <div class="location-live-dot">Live</div>
+                </div>
+                <div class="location-coords">
+                  <div class="coord-item"><span class="coord-label">Latitude</span><span class="coord-value">18.4217° N</span></div>
+                  <div class="coord-item"><span class="coord-label">Longitude</span><span class="coord-value">65.0231° E</span></div>
+                </div>
+                <div class="location-stats">
+                  <div class="location-stat"><span class="location-stat-label">Speed</span><span class="location-stat-value">17.8 kn</span></div>
+                  <div class="location-stat"><span class="location-stat-label">Heading</span><span class="location-stat-value">287°</span></div>
+                  <div class="location-stat"><span class="location-stat-label">ETA</span><span class="location-stat-value">Sep 02</span></div>
+                  <div class="location-stat"><span class="location-stat-label">Updated</span><span class="location-stat-value">2 min ago</span></div>
+                </div>
+                <div class="demo-banner mt-4">⚠ DEMO GPS DATA</div>
+              </div>
+
+              <div class="voyage-info">
+                <div class="voyage-info-title">Voyage Progress</div>
+                <div class="voyage-progress">
+                  <div class="voyage-progress-bar"><div class="voyage-progress-fill" style="width: 62%;"></div></div>
+                  <div class="voyage-progress-labels"><span>Mundra Port</span><span>Jebel Ali</span></div>
+                </div>
+                <div class="voyage-stats">
+                  <div class="voyage-stat"><div class="voyage-stat-value">62%</div><div class="voyage-stat-label">Complete</div></div>
+                  <div class="voyage-stat"><div class="voyage-stat-value">845</div><div class="voyage-stat-label">NM Traveled</div></div>
+                  <div class="voyage-stat"><div class="voyage-stat-value">520</div><div class="voyage-stat-label">NM Remaining</div></div>
+                </div>
+              </div>
+
+              <div class="location-card">
+                <h4 style="font-size: var(--text-base); font-weight: 600; margin-bottom: var(--space-4);">Route Overview</h4>
+                <div class="route-overview">
+                  <div class="route-point"><div class="route-point-dot completed"></div><div><div class="route-point-name">Rajkot, Gujarat</div><div class="route-point-detail">Origin · Departed Aug 28</div></div></div>
+                  <div class="route-point"><div class="route-point-dot completed"></div><div><div class="route-point-name">Mundra Port</div><div class="route-point-detail">Port of Loading · Aug 29</div></div></div>
+                  <div class="route-point"><div class="route-point-dot current"></div><div><div class="route-point-name">Arabian Sea</div><div class="route-point-detail">Current Position · 18.42°N, 65.02°E</div></div></div>
+                  <div class="route-point"><div class="route-point-dot destination"></div><div><div class="route-point-name">Jebel Ali Port</div><div class="route-point-detail">Port of Discharge · ETA Sep 02</div></div></div>
+                  <div class="route-point"><div class="route-point-dot"></div><div><div class="route-point-name">Dubai</div><div class="route-point-detail">Final Destination</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div class="tab-panel" id="tab-timeline">
+          <div class="card">
+            <div class="card-header"><h4>Shipment Timeline</h4></div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item"><div class="timeline-dot active"></div><div class="timeline-content"><div class="timeline-title">In Transit — Arabian Sea</div><div class="timeline-meta"><span>Aug 31, 2026 · 6:22 PM</span><span>System (GPS Update)</span></div><div class="timeline-description">Position: 18.4217° N, 65.0231° E. Speed: 17.8 knots.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Departed Mundra Port</div><div class="timeline-meta"><span>Aug 29, 2026 · 2:30 PM</span><span>Logistics: Global Shipping Corp</span><span class="font-mono text-xs" style="color: var(--color-cyan-400);">TX: 0x7f3a...b2</span></div><div class="timeline-description">Vessel MSC Harmony departed Mundra Port. Next stop: Jebel Ali, Dubai.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">All Documents Approved</div><div class="timeline-meta"><span>Aug 29, 2026 · 10:45 AM</span><span>Inspector: R. Patel</span></div><div class="timeline-description">5/5 documents approved. All hashes anchored on Arbitrum.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Invoice v2 Approved</div><div class="timeline-meta"><span>Aug 29, 2026 · 10:42 AM</span><span>Inspector: R. Patel</span><span class="font-mono text-xs" style="color: var(--color-cyan-400);">TX: 0x4e2c...a1</span></div><div class="timeline-description">Corrected commercial invoice approved and hash anchored on blockchain.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Invoice v1 Rejected</div><div class="timeline-meta"><span>Aug 28, 2026 · 5:00 PM</span><span>Inspector: R. Patel</span></div><div class="timeline-description">Rejected: Incorrect quantity for Alloy Steel Pipe Fittings.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Documents Submitted</div><div class="timeline-meta"><span>Aug 28, 2026 · 3:15 PM</span><span>Exporter: Demo User</span></div><div class="timeline-description">5 documents uploaded and submitted for review.</div></div></div>
+                <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Shipment Created</div><div class="timeline-meta"><span>Aug 28, 2026 · 2:00 PM</span><span>Exporter: Demo User</span><span class="font-mono text-xs" style="color: var(--color-cyan-400);">TX: 0x9b1d...c3</span></div><div class="timeline-description">Shipment EXP-IND-2026-00981 created. Rajkot → Dubai. Value: $284,500.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blockchain Tab -->
+        <div class="tab-panel" id="tab-blockchain">
+          <div class="card mb-6">
+            <div class="card-header"><h4>Blockchain Proof</h4><span class="badge badge-blockchain">⛓ Arbitrum Sepolia</span></div>
+            <div class="card-body">
+              <div class="detail-grid">
+                <div class="detail-row"><span class="detail-label">Metadata Hash</span><div class="hash-display">a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef<button class="copy-btn">📋</button></div></div>
+                <div class="detail-row"><span class="detail-label">Creation TX</span><div class="hash-display">0x9b1d4f7a2e8c3b6d5a0f1e9c8b7a6d5e4c3b2a1f0e9d8c7b6a5d4e3c2b1a0f<button class="copy-btn">📋</button></div></div>
+                <div class="detail-row"><span class="detail-label">Block</span><span class="detail-value mono">71,234,567</span></div>
+                <div class="detail-row"><span class="detail-label">Network</span><span class="detail-value">Arbitrum Sepolia (Chain ID: 421614)</span></div>
+                <div class="detail-row"><span class="detail-label">Contract</span><div class="hash-display">0x7a3F4b2C1d9E8f0A5B6c7D8e9F0a1B2c3D4e5F6<button class="copy-btn">📋</button></div></div>
+                <div class="detail-row"><span class="detail-label">Timestamp</span><span class="detail-value">Aug 28, 2026 · 2:00:42 PM UTC</span></div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <a href="#" class="btn btn-outline btn-sm" target="_blank">View on Arbiscan ↗</a>
+            </div>
+          </div>
+
+          <!-- On-Chain Events -->
+          <div class="card">
+            <div class="card-header"><h4>On-Chain Events</h4></div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-container" style="border: none;">
+                <table class="table">
+                  <thead><tr><th>Event</th><th>TX Hash</th><th>Block</th><th>Timestamp</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>ShipmentCreated</strong></td><td class="font-mono text-xs">0x9b1d...c3</td><td class="font-mono text-sm">71,234,567</td><td class="text-sm">Aug 28 · 2:00 PM</td><td><span class="badge badge-approved">✓ Confirmed</span></td></tr>
+                    <tr><td><strong>DocumentRegistered</strong> (Invoice v2)</td><td class="font-mono text-xs">0x7f3a...b2</td><td class="font-mono text-sm">71,234,891</td><td class="text-sm">Aug 29 · 10:42 AM</td><td><span class="badge badge-approved">✓ Confirmed</span></td></tr>
+                    <tr><td><strong>DocumentApproved</strong> (Invoice v2)</td><td class="font-mono text-xs">0x4e2c...a1</td><td class="font-mono text-sm">71,234,899</td><td class="text-sm">Aug 29 · 10:45 AM</td><td><span class="badge badge-approved">✓ Confirmed</span></td></tr>
+                    <tr><td><strong>ShipmentStatusChanged</strong> (IN_TRANSIT)</td><td class="font-mono text-xs">0x2c7f...e4</td><td class="font-mono text-sm">71,235,102</td><td class="text-sm">Aug 29 · 2:30 PM</td><td><span class="badge badge-approved">✓ Confirmed</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Upload Document Modal -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal modal-lg">
+      <div class="modal-header"><h3>Upload Document</h3><button class="modal-close" onclick="document.getElementById('uploadModal').classList.remove('active')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label form-required">Document Type</label>
+          <select class="form-select" id="docType">
+            <option value="">Select type</option>
+            <option value="commercial_invoice">Commercial Invoice</option>
+            <option value="packing_list">Packing List</option>
+            <option value="certificate_of_origin">Certificate of Origin</option>
+            <option value="quality_certificate">Quality Certificate</option>
+            <option value="inspection_certificate">Inspection Certificate</option>
+            <option value="insurance_document">Insurance Document</option>
+            <option value="shipping_document">Shipping Document</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label form-required">Document File</label>
+          <div class="file-upload" id="fileUploadArea">
+            <div class="file-upload-icon">📄</div>
+            <div class="file-upload-text"><strong>Click to upload</strong> or drag and drop</div>
+            <div class="file-upload-hint">PDF, JPG, PNG up to 50MB</div>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" style="display: none;">
+        </div>
+        <div id="filePreview" class="hidden" style="padding: var(--space-3); background: var(--color-gray-50); border-radius: var(--radius-md); margin-top: var(--space-2);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="fileName" class="text-sm font-medium"></span>
+            <span id="fileSize" class="text-xs text-secondary"></span>
+          </div>
+          <div style="margin-top: var(--space-2);">
+            <span class="text-xs text-secondary">SHA-256:</span>
+            <div class="hash-display mt-1" id="fileHash" style="font-size: 11px;">Calculating...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('uploadModal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-primary" id="uploadSubmitBtn">Upload & Hash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Modal -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal">
+      <div class="modal-header"><h3>QR Verification Code</h3><button class="modal-close" onclick="document.getElementById('qrModal').classList.remove('active')">✕</button></div>
+      <div class="modal-body text-center">
+        <div id="qrCodeContainer" style="display: inline-block; padding: var(--space-6); background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-light);"></div>
+        <div class="mt-4 text-sm text-secondary">Scan to verify shipment EXP-IND-2026-00981</div>
+        <div class="hash-display mt-2" style="justify-content: center; font-size: var(--text-xs);">/verify/EXP-IND-2026-00981</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/blockchain-verify.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    let currentShipment = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Tab switching
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+          if (tab.dataset.tab === 'tracking') initTrackingMap();
+        });
+      });
+
+      // Get ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const shipmentId = urlParams.get('id') || 'EXP-IND-2026-00981';
+
+      try {
+        currentShipment = await DocuTrade.Shipments.getShipment(shipmentId);
+        if (currentShipment && !currentShipment.error) {
+          renderShipment(currentShipment);
+        } else {
+          DocuTrade.Notifications.error('Error', 'Shipment not found');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    function renderShipment(s) {
+      // Update Top Header
+      document.querySelector('.topbar-title').textContent = s.id;
+      document.querySelector('.topbar-breadcrumb .current').textContent = s.id;
+      
+      const headerTitle = document.querySelector('.page-header-left');
+      headerTitle.innerHTML = `
+        <div style="display: flex; align-items: center; gap: var(--space-3);">
+          <h2 class="page-title">Shipment Details</h2>
+          ${DocuTrade.Shipments.getStatusBadge(s.status)}
+          ${s.docs_approved > 0 ? '<span class="badge badge-blockchain">⛓ Anchored</span>' : '<span class="badge badge-draft">Pending</span>'}
+        </div>
+        <p class="page-subtitle">${s.origin_location} → ${s.destination_location} · Created ${DocuTrade.Shipments.formatDate(s.created_at)}</p>
+      `;
+
+      // Update Shipment Info Grid
+      const detailGrids = document.querySelectorAll('.detail-grid');
+      if (detailGrids[0]) {
+        detailGrids[0].innerHTML = `
+          <div class="detail-row"><span class="detail-label">Shipment ID</span><span class="detail-value mono">${s.id}</span></div>
+          <div class="detail-row"><span class="detail-label">Status</span>${DocuTrade.Shipments.getStatusBadge(s.status)}</div>
+          <div class="detail-row"><span class="detail-label">Origin</span><span class="detail-value">${s.origin_location}</span></div>
+          <div class="detail-row"><span class="detail-label">Destination</span><span class="detail-value">${s.destination_location}</span></div>
+          <div class="detail-row"><span class="detail-label">Departure</span><span class="detail-value">${s.departure_date ? DocuTrade.Shipments.formatDate(s.departure_date) : 'TBD'}</span></div>
+          <div class="detail-row"><span class="detail-label">ETA</span><span class="detail-value">${s.expected_arrival ? DocuTrade.Shipments.formatDate(s.expected_arrival) : 'TBD'}</span></div>
+        `;
+      }
+      
+      if (detailGrids[1]) {
+        detailGrids[1].innerHTML = `
+          <div class="detail-row"><span class="detail-label">Buyer</span><span class="detail-value">${s.buyer_name}</span></div>
+          <div class="detail-row"><span class="detail-label">Incoterms</span><span class="detail-value">${s.incoterms || 'FOB'} — ${getIncotermLabel(s.incoterms)}</span></div>
+          <div class="detail-row"><span class="detail-label">Currency</span><span class="detail-value">${s.currency || 'USD'}</span></div>
+          <div class="detail-row"><span class="detail-label">Total Value</span><span class="detail-value" style="font-size: var(--text-lg); color: var(--color-cyan-400);">${DocuTrade.Shipments.formatCurrency(s.value)}</span></div>
+        `;
+      }
+
+      // Update Products Table
+      const productsTable = document.querySelectorAll('.table')[0];
+      if (productsTable && s.products) {
+        const tbody = productsTable.querySelector('tbody');
+        if (s.products.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-4">No products listed.</td></tr>';
+        } else {
+          tbody.innerHTML = s.products.map(p => `
+            <tr>
+              <td>${p.description}</td>
+              <td class="font-mono text-sm">${p.hs_code || ''}</td>
+              <td>${p.quantity}</td>
+              <td>${DocuTrade.Shipments.formatCurrency(p.unit_price)}</td>
+              <td>${DocuTrade.Shipments.formatCurrency(p.quantity * p.unit_price)}</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // Update Documents Table
+      const docsTable = document.querySelectorAll('.table')[1];
+      if (docsTable && s.documents) {
+        const tbody = docsTable.querySelector('tbody');
+        if (s.documents.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8">
+            <div style="color: var(--text-secondary); margin-bottom: var(--space-2);">No documents uploaded yet.</div>
+            <div class="text-sm" style="color: var(--text-tertiary);">Click <strong>📤 Upload Document</strong> above to add your first document.</div>
+          </td></tr>`;
+        } else {
+          const BV = DocuTrade.BlockchainVerify;
+          tbody.innerHTML = s.documents.map(d => {
+            // Status badge with proper styling
+            const statusBadge = DocuTrade.Viewer.getStatusBadgeHtml(d.status);
+            
+            // Blockchain column
+            let blockchainCol = '<span class="text-secondary text-sm">—</span>';
+            if (d.status === 'VERIFIED' && d.ipfs_cid) {
+              const txShort = BV ? BV.shortenHash(d.ipfs_cid) : '0x...';
+              blockchainCol = `<span class="badge badge-blockchain" style="cursor: pointer;" onclick="DocuTrade.Viewer.viewVerification('${d.id}')">⛓ ${txShort}</span>`;
+            } else if (d.status === 'APPROVED') {
+              blockchainCol = '<span class="text-secondary text-sm">Awaiting verification</span>';
+            } else if (d.status === 'BLOCKCHAIN_PENDING') {
+              blockchainCol = '<span class="badge badge-pending">⏳ Pending</span>';
+            } else if (d.status === 'BLOCKCHAIN_FAILED') {
+              blockchainCol = '<span class="badge badge-error">❌ Failed</span>';
+            }
+
+            // Escape values for onclick
+            const safeName = (d.name || '').replace(/'/g, "\\'");
+            const safeHash = d.hash || '';
+            const safeDocId = d.document_id || '';
+            
+            return `
+            <tr>
+              <td><strong>${d.name}</strong></td>
+              <td><span class="badge">${d.type}</span></td>
+              <td>${d.version || 'v1'}</td>
+              <td><div class="hash-display" style="max-width: 200px;">${(d.hash || '').substring(0, 12)}...<button class="copy-btn" onclick="navigator.clipboard.writeText('${safeHash}');DocuTrade.Notifications.success('Copied','Hash copied to clipboard');">📋</button></div></td>
+              <td>${statusBadge}</td>
+              <td>${blockchainCol}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="DocuTrade.Viewer.viewDocument('${d.id}', '${safeName}', '${d.status}', '${safeHash}', '${s.id}', '${safeDocId}')">View</button></td>
+            </tr>`;
+          }).join('');
+        }
+        
+        // Update tab count with verified indicator
+        const verifiedCount = s.documents.filter(d => d.status === 'VERIFIED').length;
+        const tabLabel = verifiedCount > 0 
+          ? `Documents (${s.documents.length}) · ⛓ ${verifiedCount} verified`
+          : `Documents (${s.documents.length})`;
+        document.querySelector('[data-tab="documents"]').textContent = tabLabel;
+      }
+    }
+
+    function getIncotermLabel(code) {
+      const labels = {
+        'EXW': 'Ex Works', 'FCA': 'Free Carrier', 'CPT': 'Carriage Paid To',
+        'CIP': 'Carriage & Insurance Paid', 'DAP': 'Delivered at Place',
+        'DPU': 'Delivered at Place Unloaded', 'DDP': 'Delivered Duty Paid',
+        'FAS': 'Free Alongside Ship', 'FOB': 'Free on Board',
+        'CFR': 'Cost and Freight', 'CIF': 'Cost, Insurance & Freight'
+      };
+      return labels[(code || 'FOB').toUpperCase()] || code || 'Free on Board';
+    }
+
+    // Update Status Handler
+    document.getElementById('updateStatusBtn')?.addEventListener('click', async () => {
+      if (!currentShipment) return;
+      const newStatus = prompt("Enter new status (draft, documents_pending, under_review, approved, in_transit, delivered, closed):", currentShipment.status);
+      if (newStatus && newStatus !== currentShipment.status) {
+        try {
+          const res = await DocuTrade.Shipments.updateStatus(currentShipment.id, newStatus);
+          DocuTrade.Notifications.success('Status Updated', `Shipment status changed to ${newStatus}`);
+          currentShipment.status = newStatus;
+          renderShipment(currentShipment);
+        } catch (err) {
+          DocuTrade.Notifications.error('Error', err.message);
+        }
+      }
+    });
+
+    // Upload modal
+    document.getElementById('uploadDocBtn')?.addEventListener('click', () => {
+      document.getElementById('uploadModal').classList.add('active');
+    });
+
+    const uploadArea = document.getElementById('fileUploadArea');
+    const fileInput = document.getElementById('fileInput');
+    let currentUploadHash = null;
+
+    uploadArea?.addEventListener('click', () => fileInput.click());
+    uploadArea?.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea?.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea?.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+    fileInput?.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+    async function handleFile(file) {
+      if (!file) return;
+
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      
+      if (file.size > maxSize) {
+         DocuTrade.Notifications.error('Error', 'File size exceeds the maximum allowed size (50MB).');
+         fileInput.value = '';
+         return;
+      }
+      
+      const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp'];
+      const fileNameLower = file.name.toLowerCase();
+      const hasValidExt = validExtensions.some(ext => fileNameLower.endsWith(ext));
+
+      if (!allowedTypes.includes(file.type) && !hasValidExt) {
+         DocuTrade.Notifications.error('Error', 'Unsupported file type. Please upload a PDF, JPG, PNG, or WEBP.');
+         fileInput.value = '';
+         return;
+      }
+
+      document.getElementById('filePreview').classList.remove('hidden');
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      currentUploadHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      document.getElementById('fileHash').textContent = currentUploadHash;
+    }
+
+    document.getElementById('uploadSubmitBtn')?.addEventListener('click', async () => {
+      if (!currentShipment || !currentUploadHash) {
+        DocuTrade.Notifications.error('Error', 'Please select a file first.');
+        return;
+      }
+      
+      const docTypeSelect = document.getElementById('docType');
+      const docType = docTypeSelect.options[docTypeSelect.selectedIndex].text;
+      
+      const btn = document.getElementById('uploadSubmitBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Uploading...';
+      btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('shipment_id', currentShipment.shipment_id || currentShipment.id);
+      formData.append('type', docType);
+      formData.append('hash', currentUploadHash);
+      formData.append('file', document.getElementById('fileInput').files[0]);
+
+      try {
+        const res = await DocuTrade.Shipments.addDocument(currentShipment.id, formData);
+        
+        DocuTrade.Notifications.success('Upload Successful', res.message || "Document uploaded successfully.");
+        document.getElementById('uploadModal').classList.remove('active');
+        
+        // Reset modal
+        document.getElementById('filePreview').classList.add('hidden');
+        document.getElementById('fileInput').value = '';
+        currentUploadHash = null;
+
+        // Reload shipment to refresh docs table
+        currentShipment = await DocuTrade.Shipments.getShipment(currentShipment.id);
+        renderShipment(currentShipment);
+      } catch (err) {
+        DocuTrade.Notifications.error('Upload Failed', err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // QR Modal
+    document.getElementById('qrBtn')?.addEventListener('click', () => {
+      document.getElementById('qrModal').classList.add('active');
+      const container = document.getElementById('qrCodeContainer');
+      if (!container.hasChildNodes()) {
+        container.innerHTML = '<div style="width: 200px; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 64px; border-radius: 8px;">📱</div><div style="margin-top: 8px; font-size: 11px; color: var(--text-tertiary);">QR Code (requires qrcode.js)</div>';
+      }
+    });
+
+    // Init overview mini map
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const map = L.map('overviewMap', { zoomControl: false, attributionControl: false }).setView([18.42, 65.02], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        const route = [[22.30, 69.67], [22.77, 69.72], [20.95, 67.50], [18.42, 65.02], [25.02, 55.06], [25.20, 55.27]];
+        L.polyline(route, { color: '#E8722A', weight: 3, dashArray: '8, 8' }).addTo(map);
+        L.circleMarker([22.30, 69.67], { radius: 6, fillColor: '#10B981', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<b>Rajkot</b><br>Origin');
+        L.circleMarker([18.42, 65.02], { radius: 8, fillColor: '#E8722A', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<b>Current Position</b><br>Arabian Sea<br>18.42°N, 65.02°E');
+        L.circleMarker([25.02, 55.06], { radius: 6, fillColor: '#3B82F6', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<b>Jebel Ali</b><br>Destination');
+      } catch(e) { console.warn('Map init error:', e); }
+    });
+
+    // Init tracking tab map
+    function initTrackingMap() {
+      const el = document.getElementById('trackingMap');
+      if (el._leaflet_id) return;
+      try {
+        const map = L.map('trackingMap').setView([18.42, 65.02], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        const route = [[22.30, 69.67], [22.77, 69.72], [20.95, 67.50], [18.42, 65.02], [25.02, 55.06], [25.20, 55.27]];
+        L.polyline(route, { color: '#E8722A', weight: 3, dashArray: '8, 8' }).addTo(map);
+        L.circleMarker([22.30, 69.67], { radius: 8, fillColor: '#10B981', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<div class="popup-title">Rajkot, Gujarat</div><div class="popup-detail">Origin · Departed Aug 28</div>');
+        L.circleMarker([22.77, 69.72], { radius: 6, fillColor: '#1A2942', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<div class="popup-title">Mundra Port</div><div class="popup-detail">Port of Loading · Aug 29</div>');
+        L.circleMarker([18.42, 65.02], { radius: 10, fillColor: '#E8722A', color: '#fff', weight: 3, fillOpacity: 1 }).addTo(map).bindPopup('<div class="popup-title">🚢 Current Position</div><div class="popup-detail">18.4217° N, 65.0231° E<br>Speed: 17.8 knots · Heading: 287°</div>').openPopup();
+        L.circleMarker([25.02, 55.06], { radius: 8, fillColor: '#3B82F6', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<div class="popup-title">Jebel Ali Port</div><div class="popup-detail">Port of Discharge · ETA Sep 02</div>');
+        L.circleMarker([25.20, 55.27], { radius: 6, fillColor: '#6366F1', color: '#fff', weight: 2, fillOpacity: 1 }).addTo(map).bindPopup('<div class="popup-title">Dubai</div><div class="popup-detail">Final Destination</div>');
+      } catch(e) { console.warn('Tracking map init error:', e); }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Shipment — DocuTrade</title>
+  <meta name="description" content="Create a new export shipment with origin, destination, products, and trade details.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item active"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+          <div><h1 class="topbar-title">Create Shipment</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><a href="shipments.html">Shipments</a><span class="separator">›</span><span class="current">New</span></div></div>
+        </div>
+        <div class="topbar-right">
+          
+          <button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button>
+          <div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div>
+        </div>
+      </header>
+
+      <div class="page-content" style="max-width: 880px;">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h2 class="page-title">New Shipment</h2>
+            <p class="page-subtitle">Create an export shipment and begin the documentation workflow.</p>
+          </div>
+        </div>
+
+        <div id="successView" style="display: none; text-align: center; padding: var(--space-8); background: var(--surface-primary); border-radius: var(--radius-xl); border: 1px solid var(--border-light); box-shadow: var(--shadow-lg);">
+          <div style="font-size: 48px; margin-bottom: var(--space-4);">✅</div>
+          <h2 style="margin-bottom: var(--space-2);">Shipment Created Successfully!</h2>
+          <p class="text-secondary" style="margin-bottom: var(--space-6);">Share the Secure Trade Code below with the buyer so they can track and access this shipment.</p>
+          <div id="tradeCodeDisplay" style="font-size: 28px; font-weight: 800; font-family: monospace; color: var(--color-cyan-400); background: rgba(0,240,255,0.1); padding: var(--space-4); border: 2px dashed rgba(0,240,255,0.3); border-radius: var(--radius-md); display: inline-block; margin-bottom: var(--space-6); letter-spacing: 2px;">
+            LOADING...
+          </div>
+          <br>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('tradeCodeDisplay').innerText); DocuTrade.Notifications.success('Copied', 'Trade code copied to clipboard!');" class="btn btn-outline" style="margin-right: var(--space-3);">📋 Copy Code</button>
+          <a href="shipments.html" class="btn btn-primary">Go to Shipments</a>
+        </div>
+
+        <form id="createShipmentForm">
+          <!-- Origin & Destination -->
+          <div class="card mb-6">
+            <div class="card-header"><h4>📍 Origin & Destination</h4></div>
+            <div class="card-body">
+              <div class="grid-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label form-required" for="originCountry">Origin Country</label>
+                  <select id="originCountry" class="form-select" required>
+                    <option value="">Select country</option>
+                    <option value="IN" selected>India</option>
+                    <option value="CN">China</option>
+                    <option value="BD">Bangladesh</option>
+                    <option value="VN">Vietnam</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-required" for="originLocation">Origin City / Location</label>
+                  <input type="text" id="originLocation" class="form-input" placeholder="e.g., Rajkot, Gujarat" value="Rajkot, Gujarat" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-required" for="destCountry">Destination Country</label>
+                  <select id="destCountry" class="form-select" required>
+                    <option value="">Select country</option>
+                    <option value="AE" selected>UAE</option>
+                    <option value="US">United States</option>
+                    <option value="NL">Netherlands</option>
+                    <option value="SG">Singapore</option>
+                    <option value="DE">Germany</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-required" for="destLocation">Destination City / Location</label>
+                  <input type="text" id="destLocation" class="form-input" placeholder="e.g., Dubai" value="Dubai" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buyer & Trade Info -->
+          <div class="card mb-6">
+            <div class="card-header"><h4>🤝 Buyer & Trade Details</h4></div>
+            <div class="card-body">
+              <div class="grid-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label form-required" for="buyerName">Buyer Name</label>
+                  <input type="text" id="buyerName" class="form-input" placeholder="e.g., XYZ Imports LLC" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="buyerEmail">Buyer Email</label>
+                  <input type="email" id="buyerEmail" class="form-input" placeholder="buyer@company.com">
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-required" for="incoterms">Incoterms</label>
+                  <select id="incoterms" class="form-select" required>
+                    <option value="">Select incoterm</option>
+                    <option value="FOB" selected>FOB — Free on Board</option>
+                    <option value="CIF">CIF — Cost, Insurance, Freight</option>
+                    <option value="CFR">CFR — Cost and Freight</option>
+                    <option value="EXW">EXW — Ex Works</option>
+                    <option value="DDP">DDP — Delivered Duty Paid</option>
+                    <option value="FCA">FCA — Free Carrier</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-required" for="currency">Currency</label>
+                  <select id="currency" class="form-select" required>
+                    <option value="USD" selected>USD — US Dollar</option>
+                    <option value="EUR">EUR — Euro</option>
+                    <option value="GBP">GBP — British Pound</option>
+                    <option value="INR">INR — Indian Rupee</option>
+                    <option value="AED">AED — UAE Dirham</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h4>📦 Products</h4>
+              <button type="button" class="btn btn-outline btn-sm" id="addProductBtn">+ Add Product</button>
+            </div>
+            <div class="card-body" id="productsContainer">
+              <div class="product-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: var(--space-3); align-items: end; padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-light); margin-bottom: var(--space-4);">
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">Product Description</label>
+                  <input type="text" class="form-input product-desc" placeholder="e.g., Stainless Steel Flanges" required>
+                </div>
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">HS Code</label>
+                  <input type="text" class="form-input product-hs" placeholder="7307.19">
+                </div>
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">Quantity</label>
+                  <input type="number" class="form-input product-qty" placeholder="500" required min="1">
+                </div>
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">Unit Price</label>
+                  <input type="number" class="form-input product-price" placeholder="569.00" step="0.01" required>
+                </div>
+                <button type="button" class="btn btn-ghost btn-icon remove-product" title="Remove" style="margin-bottom: 2px;">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vessel Tracking -->
+          <div class="card mb-6">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🚢 Vessel Tracking</h4>
+              <button type="button" id="verifyVesselBtn" class="btn btn-primary btn-sm">Verify Vessel</button>
+            </div>
+            <div class="card-body">
+              <div class="grid-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label" for="vesselName">Vessel Name <span class="text-red-400">*</span></label>
+                  <input type="text" id="vesselName" class="form-input" placeholder="e.g. MSC Example Vessel" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="mmsi">MMSI (Vessel ID) <span class="text-red-400">*</span></label>
+                  <input type="text" id="mmsi" class="form-input" placeholder="e.g. 123456789" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="carrier">Carrier / Shipping Line <span class="text-red-400">*</span></label>
+                  <input type="text" id="carrier" class="form-input" placeholder="e.g. MSC" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="imoNumber">Optional IMO Number</label>
+                  <input type="text" id="imoNumber" class="form-input" placeholder="e.g. 9876543">
+                </div>
+              </div>
+
+              <div id="vesselVerifyResult" style="display: none; margin-top: var(--space-4); padding: var(--space-4); border-radius: var(--radius-md);">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping -->
+          <div class="card mb-6">
+            <div class="card-header"><h4>🚢 Shipping Details</h4></div>
+            <div class="card-body">
+              <div class="grid-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label" for="departureDate">Expected Departure</label>
+                  <input type="date" id="departureDate" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="arrivalDate">Expected Arrival</label>
+                  <input type="date" id="arrivalDate" class="form-input">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label" for="notes">Additional Notes</label>
+                  <textarea id="notes" class="form-textarea" placeholder="Any special handling instructions or notes..." rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+            <a href="shipments.html" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-secondary" name="action" value="draft">Save as Draft</button>
+            <button type="submit" class="btn btn-primary" name="action" value="create">Create Shipment</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    // Add product row
+    document.getElementById('addProductBtn').addEventListener('click', () => {
+      const container = document.getElementById('productsContainer');
+      const row = document.createElement('div');
+      row.className = 'product-row';
+      row.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: var(--space-3); align-items: end; padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-light); margin-bottom: var(--space-4); animation: fadeInUp 0.2s ease;';
+      row.innerHTML = `
+        <div class="form-group" style="margin:0"><input type="text" class="form-input product-desc" placeholder="Product description" required></div>
+        <div class="form-group" style="margin:0"><input type="text" class="form-input product-hs" placeholder="HS Code"></div>
+        <div class="form-group" style="margin:0"><input type="number" class="form-input product-qty" placeholder="Qty" required min="1"></div>
+        <div class="form-group" style="margin:0"><input type="number" class="form-input product-price" placeholder="Price" step="0.01" required></div>
+        <button type="button" class="btn btn-ghost btn-icon remove-product" title="Remove" style="margin-bottom: 2px;">✕</button>
+      `;
+      container.appendChild(row);
+    });
+
+    document.getElementById('productsContainer').addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-product')) {
+        const rows = document.querySelectorAll('.product-row');
+        if (rows.length > 1) e.target.closest('.product-row').remove();
+        else DocuTrade.Notifications.error('Validation', 'At least one product is required.');
+      }
+    });
+
+    let vesselVerified = false;
+
+    document.getElementById('verifyVesselBtn').addEventListener('click', async () => {
+      const mmsi = document.getElementById('mmsi').value.trim();
+      const resultDiv = document.getElementById('vesselVerifyResult');
+      
+      if (!mmsi) {
+        DocuTrade.Notifications.error('Validation Error', 'MMSI is required for verification.');
+        return;
+      }
+      
+      resultDiv.style.display = 'block';
+      resultDiv.className = 'bg-gray-100 text-gray-700';
+      resultDiv.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">⏳ <span>Verifying with AISStream.io (This may take up to 45s)...</span></div>';
+      
+      try {
+        const res = await DocuTrade.API.post('/shipments/verify-vessel', { mmsi });
+        if (res.success && res.vessel) {
+          vesselVerified = true;
+          document.getElementById('vesselName').value = res.vessel.vessel_name !== "Unknown Vessel" ? res.vessel.vessel_name : document.getElementById('vesselName').value;
+          document.getElementById('imoNumber').value = res.vessel.imo_number !== "Unknown" ? res.vessel.imo_number : document.getElementById('imoNumber').value;
+          
+          resultDiv.className = 'bg-green-100 text-green-800';
+          resultDiv.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 4px;">✓ Vessel Verified!</div>
+            <div style="font-size: 0.9em;">
+              Name: <strong>${res.vessel.vessel_name}</strong> | IMO: ${res.vessel.imo_number} <br/>
+              Status: ${res.vessel.current_status} <br/>
+              Last known position: ${res.vessel.latitude.toFixed(4)}°, ${res.vessel.longitude.toFixed(4)}°
+            </div>
+          `;
+        } else {
+          vesselVerified = false;
+          resultDiv.className = 'bg-red-100 text-red-800';
+          resultDiv.innerHTML = `<strong>⚠ Vessel Not Found</strong><br/>No recent AIS signal for MMSI ${mmsi}. Please check the number.`;
+        }
+      } catch (err) {
+        vesselVerified = false;
+        resultDiv.className = 'bg-red-100 text-red-800';
+        resultDiv.innerHTML = `<strong>⚠ Verification Failed</strong><br/>${err.message}`;
+      }
+    });
+
+    document.getElementById('createShipmentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const action = e.submitter?.value || 'create';
+
+      // ── Validation ──────────────────────────────────────────
+      // 1. Products: at least one with valid data
+      const productRows = document.querySelectorAll('.product-row');
+      if (productRows.length === 0) {
+        DocuTrade.Notifications.error('Validation Error', 'You must add at least one product.');
+        return;
+      }
+
+      const products = [];
+      let hasEmptyProduct = false;
+      productRows.forEach(row => {
+        const desc = row.querySelector('.product-desc')?.value?.trim();
+        const qty  = parseInt(row.querySelector('.product-qty')?.value) || 0;
+        const price = parseFloat(row.querySelector('.product-price')?.value) || 0;
+        if (!desc || qty <= 0 || price <= 0) hasEmptyProduct = true;
+        products.push({
+          description: desc,
+          hs_code: row.querySelector('.product-hs')?.value?.trim(),
+          quantity: qty,
+          unit_price: price,
+        });
+      });
+
+      if (hasEmptyProduct) {
+        DocuTrade.Notifications.error('Validation Error', 'Each product must have a description, quantity > 0, and unit price > 0.');
+        return;
+      }
+
+      // 2. Location: origin ≠ destination
+      const originLoc = document.getElementById('originLocation').value.trim();
+      const destLoc   = document.getElementById('destLocation').value.trim();
+      if (originLoc && destLoc && originLoc.toLowerCase() === destLoc.toLowerCase()) {
+        DocuTrade.Notifications.error('Validation Error', 'Origin and destination locations must be different.');
+        return;
+      }
+
+      // 3. Dates: not in the past, arrival > departure
+      const today = new Date().toISOString().split('T')[0];
+      const departureDate = document.getElementById('departureDate').value;
+      const arrivalDate   = document.getElementById('arrivalDate').value;
+
+      if (departureDate && departureDate < today) {
+        DocuTrade.Notifications.error('Validation Error', 'Departure date cannot be in the past.');
+        return;
+      }
+      if (arrivalDate && arrivalDate < today) {
+        DocuTrade.Notifications.error('Validation Error', 'Arrival date cannot be in the past.');
+        return;
+      }
+      if (departureDate && arrivalDate && arrivalDate <= departureDate) {
+        DocuTrade.Notifications.error('Validation Error', 'Expected arrival must be after departure date.');
+        return;
+      }
+
+      // ── Submit with loading state ───────────────────────────
+      const submitBtn = e.submitter;
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = action === 'draft' ? 'Saving…' : 'Creating…';
+      // Disable all submit buttons to prevent double-click
+      document.querySelectorAll('[type="submit"]').forEach(b => b.disabled = true);
+
+      const shipment = {
+        origin_country: document.getElementById('originCountry').value,
+        origin_location: originLoc,
+        destination_country: document.getElementById('destCountry').value,
+        destination_location: destLoc,
+        buyer_name: document.getElementById('buyerName').value,
+        incoterms: document.getElementById('incoterms').value,
+        currency: document.getElementById('currency').value,
+        departure_date: departureDate,
+        expected_arrival: arrivalDate,
+        notes: document.getElementById('notes').value,
+        products: products,
+        status: action === 'draft' ? 'draft' : 'documents_pending',
+        vessel_name: document.getElementById('vesselName').value,
+        mmsi: document.getElementById('mmsi').value,
+        carrier: document.getElementById('carrier').value,
+        imo_number: document.getElementById('imoNumber').value,
+      };
+
+      try {
+        const result = await DocuTrade.API.post('/shipments', shipment);
+        
+        // Generate Trade Code
+        try {
+          const codeResult = await DocuTrade.API.post('/trade-codes/generate', { shipment_id: result.shipment_id || result.id });
+          document.getElementById('tradeCodeDisplay').innerText = codeResult.trade_code;
+        } catch (codeErr) {
+          console.error("Failed to generate trade code", codeErr);
+          document.getElementById('tradeCodeDisplay').innerText = "ERROR: " + (codeErr.message || "Unknown error");
+        }
+        
+        DocuTrade.Notifications.success('Shipment Created', `Shipment ${result.shipment_id || ''} has been created.`);
+        
+        // Hide form and show success view
+        document.getElementById('createShipmentForm').style.display = 'none';
+        document.getElementById('successView').style.display = 'block';
+        window.scrollTo(0, 0);
+      } catch (err) {
+        DocuTrade.Notifications.error('Error', err.message || 'Failed to create shipment.');
+        // Re-enable buttons on failure
+        document.querySelectorAll('[type="submit"]').forEach(b => b.disabled = false);
+        submitBtn.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

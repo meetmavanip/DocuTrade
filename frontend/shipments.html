@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipments — DocuTrade</title>
+  <meta name="description" content="View and manage all export shipments with real-time status, document verification, and blockchain proof.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item active"><span class="nav-icon">📦</span> Shipments <span class="nav-badge">12</span></a><a href="create-shipment.html" class="nav-item seller-only"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+          <div><h1 class="topbar-title">Shipments</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Shipments</span></div></div>
+        </div>
+        <div class="topbar-right">
+          
+          <button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button>
+          <div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h2 class="page-title">All Shipments</h2>
+            <p class="page-subtitle">Manage and track your export shipments</p>
+          </div>
+          <div class="page-header-actions seller-only">
+            <a href="create-shipment.html" class="btn btn-primary">➕ Create Shipment</a>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="form-input" placeholder="Search shipments..." id="searchInput">
+          </div>
+          <select class="form-select" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="documents_pending">Documents Pending</option>
+            <option value="under_review">Under Review</option>
+            <option value="approved">Approved</option>
+            <option value="ready_to_ship">Ready to Ship</option>
+            <option value="in_transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="closed">Closed</option>
+          </select>
+          <select class="form-select" id="dateFilter">
+            <option value="">All Time</option>
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+
+        <!-- Shipments Table -->
+        <div class="table-container">
+          <table class="table table-clickable" id="shipmentsTable">
+            <thead>
+              <tr>
+                <th>Shipment ID</th>
+                <th>Route</th>
+                <th>Buyer</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Documents</th>
+                <th>Blockchain</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="shipmentsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-4);">
+          <span class="text-sm text-secondary" id="paginationText">Showing 0 shipments</span>
+          <div class="pagination" id="paginationControls">
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script>
+  <script src="js/guards.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Hide seller-only elements if buyer
+      if (DocuTrade.Guards._getRole() === 'BUYER') {
+        document.querySelectorAll('.seller-only').forEach(el => el.style.display = 'none');
+      }
+      
+      const tbody = document.getElementById('shipmentsTableBody');
+      const searchInput = document.getElementById('searchInput');
+      const statusFilter = document.getElementById('statusFilter');
+      const dateFilter = document.getElementById('dateFilter');
+      const paginationText = document.getElementById('paginationText');
+      const paginationControls = document.getElementById('paginationControls');
+      
+      const PAGE_SIZE = 10;
+      let allShipments = [];
+      let currentPage = 1;
+
+      async function loadShipments() {
+        try {
+          allShipments = await DocuTrade.Shipments.getShipments();
+          currentPage = 1;
+          renderShipments();
+        } catch (err) {
+          console.error(err);
+          DocuTrade.Notifications.error('Error', 'Failed to load shipments.');
+        }
+      }
+
+      function getFiltered() {
+        const query = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
+        const days = parseInt(dateFilter.value) || 0;
+        const now = new Date();
+        
+        return allShipments.filter(s => {
+          if (query && !s.id.toLowerCase().includes(query) && !s.buyer_name.toLowerCase().includes(query)) return false;
+          if (status && s.status !== status) return false;
+          if (days > 0) {
+            const created = new Date(s.created_at);
+            const diffDays = Math.ceil(Math.abs(now - created) / (1000 * 60 * 60 * 24));
+            if (diffDays > days) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderShipments() {
+        const filtered = getFiltered();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, filtered.length);
+        const pageItems = filtered.slice(start, end);
+
+        paginationText.textContent = filtered.length === 0
+          ? 'No shipments found'
+          : `Showing ${start + 1}–${end} of ${filtered.length} shipments`;
+        
+        if (pageItems.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary py-8">No shipments found.</td></tr>';
+        } else {
+          tbody.innerHTML = pageItems.map(s => {
+            const originSplit = (s.origin_location || '').split(',')[0];
+            const destSplit = (s.destination_location || '').split(',')[0];
+            const route = `${originSplit} <span class="text-tertiary">→</span> ${destSplit}`;
+            const value = DocuTrade.Shipments.formatCurrency(s.value);
+            const docsStr = `${s.docs_approved}/${s.docs_total} ${s.docs_approved > 0 && s.docs_approved === s.docs_total ? '<span style="color: var(--color-green-500);">✓</span>' : ''}`;
+            let blockchainBadge = s.docs_approved > 0 ? '<span class="badge badge-blockchain">⛓ Anchored</span>' : '<span class="badge badge-draft">Pending</span>';
+
+            return `
+              <tr onclick="window.location='shipment-details.html?id=${s.id}'">
+                <td><span class="font-mono text-sm" style="color: var(--color-cyan-400); font-weight: 600;">${s.id}</span></td>
+                <td>${route}</td>
+                <td>${s.buyer_name}</td>
+                <td>${value}</td>
+                <td>${DocuTrade.Shipments.getStatusBadge(s.status)}</td>
+                <td><span class="text-sm">${docsStr}</span></td>
+                <td>${blockchainBadge}</td>
+                <td class="text-secondary text-sm">${DocuTrade.Shipments.formatDate(s.created_at)}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // Render pagination buttons
+        let btns = '';
+        btns += `<button class="pagination-btn" ${currentPage <= 1 ? 'disabled' : ''} data-page="${currentPage - 1}">←</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          btns += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+        btns += `<button class="pagination-btn" ${currentPage >= totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">→</button>`;
+        paginationControls.innerHTML = btns;
+      }
+
+      paginationControls.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-page]');
+        if (btn && !btn.disabled) {
+          currentPage = parseInt(btn.dataset.page);
+          renderShipments();
+        }
+      });
+
+      searchInput.addEventListener('input', () => { currentPage = 1; renderShipments(); });
+      statusFilter.addEventListener('change', () => { currentPage = 1; renderShipments(); });
+      dateFilter.addEventListener('change', () => { currentPage = 1; renderShipments(); });
+
+      loadShipments();
+    });
+  </script>
+</body>
+</html>

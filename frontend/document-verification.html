@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Document — DocuTrade</title>
+  <meta name="description" content="Verify export document authenticity by comparing SHA-256 hashes against blockchain-anchored proofs.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item active"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Verify Document</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Verify Document</span></div></div></div>
+        <div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div>
+      </header>
+
+      <div class="page-content" style="max-width: 880px;">
+        <div class="page-header">
+          <div class="page-header-left"><h2 class="page-title">Document Verification</h2><p class="page-subtitle">Upload a document to verify its authenticity against blockchain-anchored SHA-256 hashes.</p></div>
+        </div>
+
+        <!-- Upload & Verify Section -->
+        <div class="card mb-6">
+          <div class="card-header"><h4>🔍 Upload Document to Verify</h4></div>
+          <div class="card-body">
+            <div class="file-upload" id="verifyUploadArea">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text"><strong>Click to upload</strong> or drag and drop a document</div>
+              <div class="file-upload-hint">We'll calculate its SHA-256 hash and compare it against registered proofs</div>
+            </div>
+            <input type="file" id="verifyFileInput" style="display: none;">
+
+            <!-- File Info (shown after upload) -->
+            <div id="verifyFileInfo" class="hidden mt-4">
+              <div style="padding: var(--space-4); background: var(--color-gray-50); border-radius: var(--radius-lg);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                  <span class="font-medium" id="verifyFileName"></span>
+                  <span class="text-xs text-secondary" id="verifyFileSize"></span>
+                </div>
+                <div class="detail-row mb-2">
+                  <span class="detail-label">SHA-256 Hash (Calculated)</span>
+                  <div class="hash-display" id="verifyCalcHash">
+                    <span id="verifyHashValue"></span>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('verifyHashValue').textContent)">📋</button>
+                  </div>
+                </div>
+                <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+                  <button class="btn btn-primary" id="verifyBtn">Verify Against Blockchain</button>
+                  <button class="btn btn-outline" id="resetVerifyBtn">Upload Different File</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Result -->
+        <div id="verifyResult" class="hidden">
+          <!-- MATCH result -->
+          <div id="matchResult" class="hidden">
+            <div class="card mb-6" style="border-color: var(--color-green-300);">
+              <div class="card-body">
+                <div class="verify-result verify-match mb-4">
+                  <span style="font-size: var(--text-2xl);">✓</span>
+                  <div>
+                    <div style="font-size: var(--text-lg);">DOCUMENT VERIFIED — MATCH</div>
+                    <div style="font-weight: 400; font-size: var(--text-sm); margin-top: 2px;">This document matches a blockchain-registered proof.</div>
+                  </div>
+                </div>
+                <div class="detail-grid">
+                  <div class="detail-row"><span class="detail-label">Uploaded Hash</span><div class="hash-display" style="font-size: 11px;" id="matchUploadedHash"></div></div>
+                  <div class="detail-row"><span class="detail-label">Registered Hash</span><div class="hash-display" style="font-size: 11px;" id="matchRegisteredHash"></div></div>
+                  <div class="detail-row"><span class="detail-label">Document</span><span class="detail-value" id="matchDocName">Commercial Invoice v2</span></div>
+                  <div class="detail-row"><span class="detail-label">Shipment</span><span class="detail-value mono" id="matchShipment">EXP-IND-2026-00981</span></div>
+                  <div class="detail-row"><span class="detail-label">Registered By</span><span class="detail-value" id="matchRegisteredBy">ABC Manufacturing Pvt. Ltd.</span></div>
+                  <div class="detail-row"><span class="detail-label">Approved By</span><span class="detail-value" id="matchApprovedBy"></span></div>
+                  <div class="detail-row"><span class="detail-label">Blockchain TX</span><div class="hash-display" style="font-size: 11px;" id="matchTxHash"></div></div>
+                  <div class="detail-row"><span class="detail-label">Anchored</span><span class="detail-value" id="matchAnchored"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MISMATCH result -->
+          <div id="mismatchResult" class="hidden">
+            <div class="card mb-6" style="border-color: var(--color-red-300);">
+              <div class="card-body">
+                <div class="verify-result verify-mismatch mb-4">
+                  <span style="font-size: var(--text-2xl);">✕</span>
+                  <div>
+                    <div style="font-size: var(--text-lg);">DOCUMENT MISMATCH — VERIFICATION FAILED</div>
+                    <div style="font-weight: 400; font-size: var(--text-sm); margin-top: 2px;">This document does not match any blockchain-registered proof. It may have been modified.</div>
+                  </div>
+                </div>
+                <div class="detail-grid">
+                  <div class="detail-row"><span class="detail-label">Uploaded Hash</span><div class="hash-display" style="font-size: 11px;" id="mismatchUploadedHash"></div></div>
+                  <div class="detail-row"><span class="detail-label">Expected Hash</span><div class="hash-display" style="font-size: 11px;">No matching hash found in registry</div></div>
+                </div>
+                <div style="margin-top: var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-red-50); border-radius: var(--radius-md); border: 1px solid var(--color-red-200);">
+                  <p class="text-sm" style="color: var(--color-red-600);"><strong>⚠ Warning:</strong> This document does not match any registered proof. It may be a different version, a modified copy, or not yet registered.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="card">
+          <div class="card-header"><h4>How Document Verification Works</h4></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">1. Upload Document</div><div class="timeline-description">Select the document you want to verify.</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">2. SHA-256 Hash Calculated</div><div class="timeline-description">A unique cryptographic fingerprint (SHA-256) is calculated from the file content.</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">3. Compare with Blockchain</div><div class="timeline-description">The hash is compared against proofs registered on the Arbitrum blockchain.</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">4. Result</div><div class="timeline-description"><strong style="color: var(--color-green-600);">MATCH ✓</strong> = document is authentic. <strong style="color: var(--color-red-600);">MISMATCH ✕</strong> = document may have been modified.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+  <script>
+    const uploadArea = document.getElementById('verifyUploadArea');
+    const fileInput = document.getElementById('verifyFileInput');
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleVerifyFile(e.dataTransfer.files[0]); });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleVerifyFile(e.target.files[0]); });
+
+    let currentHash = '';
+
+    async function handleVerifyFile(file) {
+      document.getElementById('verifyFileName').textContent = file.name;
+      document.getElementById('verifyFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      // Calculate SHA-256
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      currentHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      document.getElementById('verifyHashValue').textContent = currentHash;
+      document.getElementById('verifyFileInfo').classList.remove('hidden');
+      uploadArea.style.display = 'none';
+      document.getElementById('verifyResult').classList.add('hidden');
+    }
+
+    document.getElementById('resetVerifyBtn').addEventListener('click', () => {
+      document.getElementById('verifyFileInfo').classList.add('hidden');
+      uploadArea.style.display = '';
+      document.getElementById('verifyResult').classList.add('hidden');
+      fileInput.value = '';
+    });
+
+    document.getElementById('verifyBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('verifyBtn');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        const res = await DocuTrade.API.post('/documents/verify-hash', { hash: currentHash });
+        
+        if (res.match) {
+          document.getElementById('matchResult').classList.remove('hidden');
+          document.getElementById('mismatchResult').classList.add('hidden');
+          
+          document.getElementById('matchUploadedHash').textContent = currentHash;
+          document.getElementById('matchRegisteredHash').textContent = res.document.sha256;
+          document.getElementById('matchDocName').textContent = res.document.filename || 'Document';
+          document.getElementById('matchShipment').textContent = res.document.shipment_id;
+          document.getElementById('matchRegisteredBy').textContent = res.document.uploader_name || 'N/A';
+          document.getElementById('matchApprovedBy').textContent = res.document.verifier_wallet || 'N/A';
+          
+          const txEl = document.getElementById('matchTxHash');
+          if (txEl) {
+              txEl.innerHTML = (res.document.transaction_hash ? res.document.transaction_hash.substring(0, 16) + '...' : 'Pending') + '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + res.document.transaction_hash + '\')">📋</button>';
+          }
+          const anchorEl = document.getElementById('matchAnchored');
+          if (anchorEl) {
+              anchorEl.textContent = res.document.verified_at ? new Date(res.document.verified_at).toLocaleString() : 'N/A';
+          }
+          
+          if (res.verified) {
+             DocuTrade.Notifications.success('Verified', 'Document matches blockchain-registered proof.');
+             // Ensure visually it shows VERIFIED
+             const vBlock = document.querySelector('.verify-match');
+             if (vBlock) {
+                 vBlock.innerHTML = `
+                  <span style="font-size: var(--text-2xl);">✓</span>
+                  <div>
+                    <div style="font-size: var(--text-lg);">DOCUMENT VERIFIED — MATCH</div>
+                    <div style="font-weight: 400; font-size: var(--text-sm); margin-top: 2px;">This document matches a blockchain-registered proof.</div>
+                  </div>
+                 `;
+             }
+          } else {
+             DocuTrade.Notifications.info('Pending Verification', 'Document exists but is not yet fully verified on blockchain.');
+             const vBlock = document.querySelector('.verify-match');
+             if (vBlock) {
+                 vBlock.innerHTML = `
+                  <span style="font-size: var(--text-2xl);">⏳</span>
+                  <div>
+                    <div style="font-size: var(--text-lg);">DOCUMENT FOUND — NOT VERIFIED</div>
+                    <div style="font-weight: 400; font-size: var(--text-sm); margin-top: 2px;">This document exists but blockchain confirmation is pending.</div>
+                  </div>
+                 `;
+             }
+          }
+        } else {
+          document.getElementById('mismatchResult').classList.remove('hidden');
+          document.getElementById('matchResult').classList.add('hidden');
+          document.getElementById('mismatchUploadedHash').textContent = currentHash;
+          DocuTrade.Notifications.error('Mismatch', 'Document does not match any registered proof.');
+        }
+      } catch (err) {
+        DocuTrade.Notifications.error('Error', 'Verification failed.');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Verify Against Blockchain';
+    });
+  </script>
+</body>
+</html>

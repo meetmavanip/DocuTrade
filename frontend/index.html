@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuTrade — Proof for Every Export</title>
+  <meta name="description" content="DocuTrade is a blockchain-powered platform for secure export documentation, shipment traceability, and independent verification on Arbitrum.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* ---- Landing Page Specific (Dark 3D Theme) ---- */
+    body { 
+      background: var(--color-navy-900); 
+      color: var(--color-white);
+      background-image: radial-gradient(circle at top right, rgba(0, 240, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(232, 114, 42, 0.05), transparent 40%);
+    }
+
+    /* Navbar */
+    .landing-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-10);
+      z-index: 100;
+      background: rgba(11, 17, 33, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: all var(--transition-base);
+    }
+    .landing-nav.scrolled { 
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5); 
+      height: 70px;
+      background: rgba(11, 17, 33, 0.85);
+    }
+
+    .landing-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .landing-logo {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--color-blue-500), var(--color-cyan-500));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: var(--text-xl);
+      color: var(--color-navy-900);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+    .landing-brand-name {
+      font-size: var(--text-xl);
+      font-weight: 800;
+      color: var(--color-white);
+      letter-spacing: 1px;
+    }
+    .landing-nav-links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-10);
+    }
+    .landing-nav-links a {
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--color-gray-300);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+      position: relative;
+    }
+    .landing-nav-links a:hover { 
+      color: var(--color-cyan-400); 
+    }
+    .landing-nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0; right: 0;
+      height: 2px;
+      background: var(--color-cyan-500);
+      transform: scaleX(0);
+      transition: transform var(--transition-fast);
+      box-shadow: 0 0 10px var(--color-cyan-500);
+    }
+    .landing-nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .landing-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* Hero */
+    .hero-section {
+      padding: calc(80px + var(--space-20)) var(--space-10) var(--space-20);
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: 8px 20px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-cyan-400);
+      margin-bottom: var(--space-6);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+    .hero-badge-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--color-cyan-500);
+      box-shadow: 0 0 8px var(--color-cyan-500);
+    }
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--color-white);
+      margin-bottom: var(--space-6);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--color-blue-400), var(--color-cyan-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3));
+    }
+    .hero-description {
+      font-size: var(--text-lg);
+      color: var(--color-gray-300);
+      line-height: 1.8;
+      margin-bottom: var(--space-10);
+      max-width: 540px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: var(--space-5);
+      margin-bottom: var(--space-10);
+    }
+    .hero-stats {
+      display: flex;
+      gap: var(--space-12);
+      padding-top: var(--space-8);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-white);
+      text-shadow: 0 2px 10px rgba(255,255,255,0.2);
+    }
+    .hero-stat-label {
+      font-size: var(--text-sm);
+      color: var(--color-cyan-400);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* Hero Visual — 3D Image Card */
+    .hero-visual {
+      position: relative;
+      border-radius: var(--radius-2xl);
+      padding: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px);
+    }
+    .hero-visual img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: block;
+    }
+
+    /* Floating badges around hero visual */
+    .hero-float-badge {
+      position: absolute;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: float 4s ease-in-out infinite;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 10;
+    }
+    .hero-float-badge.b1 {
+      top: 20px; left: -30px;
+      background: rgba(16, 185, 129, 0.8);
+      color: white;
+      animation-delay: 0s;
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+    .hero-float-badge.b2 {
+      bottom: 40px; right: -20px;
+      background: rgba(11, 17, 33, 0.9);
+      color: var(--color-cyan-400);
+      animation-delay: 1.5s;
+    }
+    .hero-float-badge.b3 {
+      top: 50%; left: -40px;
+      background: rgba(232, 114, 42, 0.8);
+      color: white;
+      animation-delay: 0.8s;
+      border-color: rgba(232, 114, 42, 0.5);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* ---- Features Section ---- */
+    .features-section {
+      padding: var(--space-24) var(--space-10);
+      background: linear-gradient(to bottom, var(--color-navy-900), rgba(11,17,33,0.95));
+      position: relative;
+    }
+    .features-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--space-16);
+    }
+    .section-badge {
+      display: inline-flex;
+      padding: 6px 16px;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-blue-400);
+      background: rgba(0, 122, 255, 0.1);
+      border: 1px solid rgba(0, 122, 255, 0.3);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-5);
+    }
+    .section-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--color-white);
+      margin-bottom: var(--space-4);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .section-description {
+      font-size: var(--text-lg);
+      color: var(--color-gray-400);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8);
+      text-align: center;
+      transition: all var(--transition-base);
+      backdrop-filter: blur(10px);
+    }
+    .feature-card:hover {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0, 240, 255, 0.05);
+      transform: translateY(-8px);
+      border-color: var(--color-cyan-500);
+      background: rgba(0, 240, 255, 0.02);
+    }
+    .feature-icon {
+      width: 72px; height: 72px;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto var(--space-6);
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: inset 0 2px 10px rgba(255,255,255,0.05);
+    }
+    .feature-icon.orange  { color: var(--color-orange-400); border-color: rgba(245, 158, 11, 0.3); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+    .feature-icon.green   { color: var(--color-green-400); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+    .feature-icon.navy    { color: var(--color-cyan-400); border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
+    .feature-icon.blue    { color: var(--color-blue-400); border-color: rgba(0, 122, 255, 0.3); box-shadow: 0 0 20px rgba(0, 122, 255, 0.2); }
+    .feature-icon.amber   { color: var(--color-amber-400); border-color: rgba(251, 191, 36, 0.3); box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
+    .feature-icon.red     { color: var(--color-red-400); border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+    .feature-title {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--color-white);
+      margin-bottom: var(--space-3);
+    }
+    .feature-description {
+      font-size: var(--text-base);
+      color: var(--color-gray-400);
+      line-height: 1.6;
+    }
+
+    /* ---- How It Works ---- */
+    .how-section {
+      padding: var(--space-24) var(--space-10);
+      background: rgba(5, 10, 20, 0.8);
+      position: relative;
+    }
+    .how-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-8);
+      margin-top: var(--space-16);
+    }
+    .how-step {
+      text-align: center;
+      position: relative;
+    }
+    .how-step::after {
+      content: '';
+      position: absolute;
+      top: 36px; right: -50%;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--color-cyan-500), transparent);
+      z-index: 0;
+      opacity: 0.3;
+    }
+    .how-step:last-child::after { display: none; }
+    
+    .how-step-number {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(11, 17, 33, 0.9);
+      border: 2px solid var(--color-cyan-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--color-cyan-400);
+      margin: 0 auto var(--space-6);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+    .how-step-title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--color-white);
+      margin-bottom: var(--space-3);
+    }
+    .how-step-description {
+      font-size: var(--text-base);
+      color: var(--color-gray-400);
+      line-height: 1.6;
+    }
+
+    /* ---- CTA Section ---- */
+    .cta-section {
+      padding: var(--space-32) var(--space-10);
+      background: url('img/hero-3d.jpg') center/cover no-repeat;
+      position: relative;
+      text-align: center;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.85);
+      backdrop-filter: blur(8px);
+    }
+    .cta-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: var(--space-6);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+    .cta-description {
+      font-size: var(--text-xl);
+      color: var(--color-gray-300);
+      margin-bottom: var(--space-10);
+      line-height: 1.6;
+    }
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-6);
+    }
+
+    /* ---- Footer ---- */
+    .landing-footer {
+      padding: var(--space-10) var(--space-10);
+      background: var(--color-navy-900);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-text {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+    }
+    .footer-links {
+      display: flex;
+      gap: var(--space-8);
+    }
+    .footer-links a {
+      font-size: var(--text-sm);
+      color: var(--color-gray-400);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    .footer-links a:hover {
+      color: var(--color-cyan-400);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="landing-nav" id="landingNav">
+    <div class="landing-brand">
+      <div class="landing-logo">D</div>
+      <span class="landing-brand-name">DOCUTRADE</span>
+    </div>
+    <div class="landing-nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="public-verify.html">Verify</a>
+      <a href="blockchain.html">Blockchain</a>
+    </div>
+    <div class="landing-nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log In</a>
+      <a href="register.html" class="btn btn-primary">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Powered by Arbitrum Web3
+        </div>
+        <h1 class="hero-title">
+          Verify Every Shipment.<br>
+          Trust Every <span class="highlight">Document.</span>
+        </h1>
+        <p class="hero-description">
+          DocuTrade is an enterprise 3D blockchain platform for secure export documentation,
+          shipment traceability and independent verification. Immutable proof
+          for every global transaction.
+        </p>
+        <div class="hero-actions">
+          <a href="create-shipment.html" class="btn btn-primary btn-lg">Create Shipment</a>
+          <a href="document-verification.html" class="btn btn-outline btn-lg">Verify Document</a>
+          <a href="dashboard.html" class="btn btn-ghost btn-lg">Explore Demo</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">2,847</div>
+            <div class="hero-stat-label">Shipments Verified</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">12,340</div>
+            <div class="hero-stat-label">Documents Anchored</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">99.8%</div>
+            <div class="hero-stat-label">Verification Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-float-badge b1">✓ Verified</div>
+        <div class="hero-float-badge b2">🔒 SHA-256</div>
+        <div class="hero-float-badge b3">⛓ On-Chain Proof</div>
+        
+        <!-- Generated 3D Asset -->
+        <img src="img/hero-3d.jpg" alt="DocuTrade 3D Logistics & Blockchain Verification">
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section" id="features">
+    <div class="features-inner">
+      <div class="section-header">
+        <div class="section-badge">Features</div>
+        <h2 class="section-title">Create. Verify. Trace. Prove.</h2>
+        <p class="section-description">
+          A premium Web3 infrastructure for trusted international trade documentation
+          and 3D shipment verification.
+        </p>
+      </div>
+      <div class="features-grid stagger">
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon orange">📄</div>
+          <h3 class="feature-title">Document Verification</h3>
+          <p class="feature-description">
+            SHA-256 cryptographic fingerprints for every export document.
+            Detect any tampering instantly with immutable hash comparison.
+          </p>
+        </div>
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon green">⛓</div>
+          <h3 class="feature-title">Blockchain Proof</h3>
+          <p class="feature-description">
+            Critical proofs anchored on Arbitrum. Immutable, timestamped,
+            and independently verifiable by any party globally.
+          </p>
+        </div>
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon navy">🚢</div>
+          <h3 class="feature-title">Shipment Tracking</h3>
+          <p class="feature-description">
+            Real-time tracking with interactive maps, milestones, and
+            complete event history from origin to destination.
+          </p>
+        </div>
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon blue">🔐</div>
+          <h3 class="feature-title">Role-Based Access</h3>
+          <p class="feature-description">
+            Separate roles for exporters, inspectors, logistics,
+            buyers, and administrators with granular permissions.
+          </p>
+        </div>
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon amber">📱</div>
+          <h3 class="feature-title">QR Verification</h3>
+          <p class="feature-description">
+            Generate QR codes for any shipment or document. Anyone can
+            verify authenticity without an account securely.
+          </p>
+        </div>
+        <div class="feature-card animate-fade-in-up">
+          <div class="feature-icon red">🔍</div>
+          <h3 class="feature-title">Audit Trail</h3>
+          <p class="feature-description">
+            Complete audit log of every action — uploads, approvals,
+            status changes, and blockchain transactions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section" id="how-it-works">
+    <div class="how-inner">
+      <div class="section-header">
+        <div class="section-badge">Process</div>
+        <h2 class="section-title">How DocuTrade Works</h2>
+        <p class="section-description">
+          From shipment creation to blockchain verification in four simple steps.
+        </p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-number">1</div>
+          <h3 class="how-step-title">Create Shipment</h3>
+          <p class="how-step-description">
+            Exporter creates a shipment with origin, destination, products, and
+            trade details. The shipment enters the workflow.
+          </p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-number">2</div>
+          <h3 class="how-step-title">Upload Documents</h3>
+          <p class="how-step-description">
+            Upload invoices, certificates, and inspection reports. Each document
+            is SHA-256 hashed and stored with version control.
+          </p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-number">3</div>
+          <h3 class="how-step-title">Review & Approve</h3>
+          <p class="how-step-description">
+            Inspectors review and approve documents. Approved document hashes
+            are anchored on the Arbitrum blockchain network.
+          </p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-number">4</div>
+          <h3 class="how-step-title">Verify & Trace</h3>
+          <p class="how-step-description">
+            Anyone can verify document authenticity, trace the shipment, and
+            check blockchain proof via QR code or public URL.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2 class="cta-title">Ready to Build Trust in Every Export?</h2>
+      <p class="cta-description">
+        Start verifying shipments and documents with blockchain-backed proof.
+        No middlemen. No trust assumptions. Just cryptographic certainty.
+      </p>
+      <div class="cta-actions">
+        <a href="register.html" class="btn btn-primary btn-lg">Get Started Free</a>
+        <a href="public-verify.html" class="btn btn-secondary btn-lg">Try Verification</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <span class="footer-text">© 2026 DocuTrade. Proof for Every Export.</span>
+      <div class="footer-links">
+        <a href="#">Documentation</a>
+        <a href="#">GitHub</a>
+        <a href="#">Arbitrum</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      document.getElementById('landingNav').classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+</body>
+</html>

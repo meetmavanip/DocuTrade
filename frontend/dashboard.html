@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuTrade | Redirecting...</title>
+  <style>
+    body { background: #0F172A; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <p>Loading your dashboard...</p>
+  <script src="js/guards.js"></script>
+  <script>
+    // Redirect based on the authenticated role
+    if (window.DocuTrade && window.DocuTrade.Guards) {
+        window.DocuTrade.Guards.redirectBasedOnRole();
+    } else {
+        window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

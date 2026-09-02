@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents — DocuTrade</title>
+  <meta name="description" content="Manage all export documents with SHA-256 verification, version control, and blockchain anchoring.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item active"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Documents</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Documents</span></div></div></div>
+        <div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-header-left"><h2 class="page-title">All Documents</h2><p class="page-subtitle">Manage export documents across all shipments</p></div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary seller-only" id="globalUploadDocBtn">➕ Upload Document</button>
+            <a href="document-verification.html" class="btn btn-outline">🔍 Verify Document</a>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-box"><span class="search-icon">🔍</span><input type="text" class="form-input" placeholder="Search documents..."></div>
+          <select class="form-select"><option value="">All Types</option><option>Commercial Invoice</option><option>Packing List</option><option>Certificate of Origin</option><option>Quality Certificate</option><option>Inspection Certificate</option><option>Insurance Document</option><option>Shipping Document</option></select>
+          <select class="form-select"><option value="">All Status</option><option>Pending</option><option>Approved</option><option>Rejected</option><option>Superseded</option><option>Revoked</option></select>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead><tr><th>Document</th><th>Shipment</th><th>Type</th><th>Version</th><th>SHA-256</th><th>Status</th><th>Blockchain</th><th>Uploaded</th><th>Actions</th></tr></thead>
+            <tbody id="documentsTableBody">
+              <tr><td colspan="9" class="text-center py-8 text-secondary">Loading documents...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-4);"><span class="text-sm text-secondary" id="docCountText">Loading documents...</span><div class="pagination" id="docPagination"><button class="pagination-btn" disabled>←</button><button class="pagination-btn active">1</button><button class="pagination-btn" disabled>→</button></div></div>
+      </div>
+    </main>
+  </div>
+  <!-- Upload Document Modal -->
+  <div class="modal-overlay" id="globalUploadModal">
+    <div class="modal modal-lg">
+      <div class="modal-header"><h3>Upload Trade Document</h3><button class="modal-close" onclick="document.getElementById('globalUploadModal').classList.remove('active')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label form-required">Trade</label>
+          <select class="form-select" id="globalDocTrade" required>
+            <option value="">Select Trade ▼</option>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label form-required">Document Type</label>
+          <select class="form-select" id="globalDocType" required>
+            <option value="">Select Document Type ▼</option>
+            <option value="commercial_invoice">Commercial Invoice</option>
+            <option value="bill_of_lading">Bill of Lading</option>
+            <option value="packing_list">Packing List</option>
+            <option value="certificate_of_origin">Certificate of Origin</option>
+            <option value="purchase_contract">Purchase Contract</option>
+            <option value="shipping_document">Shipping Document</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Document Name (optional)</label>
+          <input type="text" id="globalDocName" class="form-input" placeholder="e.g. Final Invoice v2">
+        </div>
+        <div class="form-group">
+          <label class="form-label form-required">Upload File</label>
+          <div class="file-upload" id="globalFileUploadArea">
+            <div class="file-upload-icon">📄</div>
+            <div class="file-upload-text"><strong>Click to Choose File</strong> or drag and drop</div>
+            <div class="file-upload-hint">Supported: PDF, JPG, JPEG, PNG, WEBP (Max 50MB)</div>
+          </div>
+          <input type="file" id="globalFileInput" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" style="display: none;">
+        </div>
+        <div id="globalFilePreview" class="hidden" style="padding: var(--space-3); background: var(--color-gray-50); border-radius: var(--radius-md); margin-top: var(--space-2);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="globalFileName" class="text-sm font-medium"></span>
+            <span id="globalFileSize" class="text-xs text-secondary"></span>
+          </div>
+          <div style="margin-top: var(--space-2);">
+            <span class="text-xs text-secondary">SHA-256:</span>
+            <div class="hash-display mt-1" id="globalFileHash" style="font-size: 11px;">Calculating...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('globalUploadModal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-primary" id="globalUploadSubmitBtn">Upload Document</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/blockchain-verify.js"></script><script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadBtn = document.getElementById('globalUploadDocBtn');
+      const uploadModal = document.getElementById('globalUploadModal');
+      const uploadArea = document.getElementById('globalFileUploadArea');
+      const fileInput = document.getElementById('globalFileInput');
+      const submitBtn = document.getElementById('globalUploadSubmitBtn');
+      const tradeSelect = document.getElementById('globalDocTrade');
+      
+      let currentUploadHash = null;
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      async function loadDocuments() {
+        const tbody = document.getElementById('documentsTableBody');
+        const countEl = document.getElementById('docCountText');
+        try {
+          const res = await DocuTrade.API.get('/documents');
+          const docs = (res && res.data) ? res.data : [];
+          
+          if (!docs || docs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-secondary">No documents found.</td></tr>';
+            if (countEl) countEl.textContent = 'No documents found.';
+            return;
+          }
+
+          if (countEl) {
+            countEl.textContent = `Showing 1-${docs.length} of ${docs.length} document${docs.length === 1 ? '' : 's'}`;
+          }
+
+          const BV = window.DocuTrade.BlockchainVerify;
+          const user = window.DocuTrade.Auth ? window.DocuTrade.Auth.getUser() : null;
+          const role = (user && user.role) ? user.role.toUpperCase() : '';
+
+          tbody.innerHTML = docs.map(d => {
+            const statusBadge = window.DocuTrade.Viewer ? window.DocuTrade.Viewer.getStatusBadgeHtml(d.status) : d.status;
+            
+            let blockchainCol = '<span class="text-secondary text-sm">—</span>';
+            if (d.status === 'VERIFIED' && (d.ipfs_cid || d.blockchain_transaction)) {
+              const txHash = d.ipfs_cid || d.blockchain_transaction || '';
+              const txShort = BV ? BV.shortenHash(txHash) : (txHash.substring(0, 10) + '...');
+              blockchainCol = `<span class="badge badge-blockchain" style="cursor: pointer;" onclick="DocuTrade.Viewer.viewVerification('${d.id}')">⛓ ${txShort}</span>`;
+            } else if (d.status === 'APPROVED') {
+              blockchainCol = '<span class="text-secondary text-sm">Awaiting</span>';
+            } else if (d.status === 'BLOCKCHAIN_PENDING') {
+              blockchainCol = '<span class="badge badge-pending">⏳</span>';
+            }
+            
+            const date = d.created_at ? new Date(d.created_at).toLocaleDateString() : '—';
+            const docName = escapeHtml(d.filename || 'Unnamed');
+            const docType = escapeHtml(d.document_type || 'Document');
+            const hashShort = d.sha256 ? d.sha256.substring(0, 12) + '...' : '—';
+            const displayShipment = escapeHtml(d.display_shipment_id || d.shipment_id || '—');
+            const safeId = escapeHtml(d.id);
+            const safeHash = escapeHtml(d.sha256 || '');
+            const safeShipmentId = escapeHtml(d.shipment_id || '');
+            
+            const normalizedStatus = (d.status || '').toUpperCase().replace('_', ' ');
+            let actionHtml = `<button class="btn btn-ghost btn-sm" onclick="DocuTrade.Viewer.viewDocument('${safeId}', '${docName}', '${d.status}', '${safeHash}', '${safeShipmentId}', '${displayShipment}')">View</button>`;
+            
+            if (role === 'BUYER' && (normalizedStatus === 'PENDING' || normalizedStatus === 'PENDING REVIEW')) {
+                actionHtml += `
+                  <button class="btn btn-success btn-sm" style="margin-left: 4px;" onclick="event.stopPropagation(); DocuTrade.Viewer.currentDoc = { id: '${safeId}', name: '${docName}', status: '${d.status}', hash: '${safeHash}', shipmentId: '${safeShipmentId}', documentIdStr: '${displayShipment}' }; DocuTrade.Viewer.showBlockchainConfirmation()">Approve</button>
+                  <button class="btn btn-danger btn-sm" style="margin-left: 4px;" onclick="event.stopPropagation(); DocuTrade.Viewer.currentDoc = { id: '${safeId}', name: '${docName}', status: '${d.status}' }; DocuTrade.Viewer.showReject()">Reject</button>
+                `;
+            }
+
+            return `
+              <tr>
+                <td><strong>${docType}</strong><br><span class="text-xs text-secondary">${docName}</span></td>
+                <td class="font-mono text-xs" style="color: var(--color-orange-500);"><a href="shipment-details.html?id=${displayShipment}">${displayShipment}</a></td>
+                <td><span class="badge badge-exporter">${docType}</span></td>
+                <td>v${d.current_version || 1}</td>
+                <td><span class="font-mono text-xs" title="${safeHash}">${hashShort}</span></td>
+                <td>${statusBadge}</td>
+                <td>${blockchainCol}</td>
+                <td class="text-sm text-secondary">${date}</td>
+                <td>${actionHtml}</td>
+              </tr>
+            `;
+          }).join('');
+        } catch (e) {
+          console.error("Documents API fetch error:", e);
+          tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-danger">Failed to load documents: ${escapeHtml(e.message || 'Unknown error')}</td></tr>`;
+          if (countEl) countEl.textContent = 'Error loading documents.';
+        }
+      }
+
+      loadDocuments();
+
+      // Only sellers should see the button - app.js handles the generic 'seller-only' hiding,
+      // but let's be explicit and fetch trades if they are a seller
+      if (uploadBtn) {
+        uploadBtn.addEventListener('click', async () => {
+          uploadModal.classList.add('active');
+          // Fetch shipments to populate the dropdown
+          try {
+            const shipments = await DocuTrade.Shipments.getShipments();
+            tradeSelect.innerHTML = '<option value="">Select Trade ▼</option>' + shipments.map(s => 
+              `<option value="${s.id}">${s.id} - ${s.destination_location}</option>`
+            ).join('');
+          } catch (e) {
+            console.error("Failed to fetch trades", e);
+            DocuTrade.Notifications.error('Error', 'Failed to load trades.');
+          }
+        });
+      }
+
+      uploadArea?.addEventListener('click', () => fileInput.click());
+      uploadArea?.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+      uploadArea?.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+      uploadArea?.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+      fileInput?.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+      async function handleFile(file) {
+        if (!file) return;
+
+        // Validation
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        
+        if (file.size > maxSize) {
+           DocuTrade.Notifications.error('Error', 'File size exceeds the maximum allowed size (50MB).');
+           fileInput.value = '';
+           return;
+        }
+        
+        // Sometimes file.type is empty or we should check extensions
+        const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp'];
+        const fileNameLower = file.name.toLowerCase();
+        const hasValidExt = validExtensions.some(ext => fileNameLower.endsWith(ext));
+
+        if (!allowedTypes.includes(file.type) && !hasValidExt) {
+           DocuTrade.Notifications.error('Error', 'Unsupported file type. Please upload a PDF, JPG, PNG, or WEBP.');
+           fileInput.value = '';
+           return;
+        }
+
+        document.getElementById('globalFilePreview').classList.remove('hidden');
+        document.getElementById('globalFileName').textContent = file.name;
+        document.getElementById('globalFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+        
+        try {
+            const buffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            currentUploadHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            document.getElementById('globalFileHash').textContent = currentUploadHash;
+        } catch (e) {
+            console.error("Hashing failed", e);
+            document.getElementById('globalFileHash').textContent = "Hash calculation failed";
+        }
+      }
+
+      submitBtn?.addEventListener('click', async () => {
+        const shipmentId = tradeSelect.value;
+        const docTypeSelect = document.getElementById('globalDocType');
+        const docType = docTypeSelect.options[docTypeSelect.selectedIndex].text;
+        const customName = document.getElementById('globalDocName').value.trim();
+        const file = fileInput.files[0];
+
+        if (!shipmentId) {
+          DocuTrade.Notifications.error('Error', 'Please select a trade.');
+          return;
+        }
+        if (docTypeSelect.value === "") {
+          DocuTrade.Notifications.error('Error', 'Please select a document type.');
+          return;
+        }
+        if (!file || !currentUploadHash) {
+          DocuTrade.Notifications.error('Error', 'Please choose a file to upload.');
+          return;
+        }
+
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Uploading...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('shipment_id', shipmentId);
+        formData.append('type', docType);
+        formData.append('hash', currentUploadHash);
+        if (customName) {
+            formData.append('document_name', customName);
+        }
+        formData.append('file', file);
+
+        try {
+          const res = await DocuTrade.API.post('/documents/upload', formData);
+          
+          DocuTrade.Notifications.success('Upload Successful', 'Document uploaded successfully.');
+          uploadModal.classList.remove('active');
+          
+          // Reset form
+          tradeSelect.value = '';
+          docTypeSelect.value = '';
+          document.getElementById('globalDocName').value = '';
+          fileInput.value = '';
+          document.getElementById('globalFilePreview').classList.add('hidden');
+          currentUploadHash = null;
+
+          // Reload page to show new document
+          setTimeout(() => {
+              window.location.reload();
+          }, 1500);
+
+        } catch (err) {
+          DocuTrade.Notifications.error('Upload Failed', err.message);
+        } finally {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

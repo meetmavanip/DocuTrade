@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuTrade | Buyer Dashboard</title>
+  <meta name="description"
+    content="DocuTrade dashboard — overview of shipments, documents, verifications and blockchain activity.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">DOCUTRADE</span>
+          <span class="sidebar-brand-tagline">Web3 Verified</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Overview</div>
+          <a href="buyer-dashboard.html" class="nav-item active">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Trade</div>
+          <a href="shipments.html" class="nav-item">
+            <span class="nav-icon">📦</span> My Shipments
+            <span class="nav-badge">12</span>
+          </a>
+          <a href="documents.html" class="nav-item">
+            <span class="nav-icon">📄</span> Documents
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Tracking</div>
+          <a href="tracking.html" class="nav-item">
+            <span class="nav-icon">🗺️</span> Live Tracking
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Blockchain</div>
+          <a href="blockchain.html" class="nav-item">
+            <span class="nav-icon">⛓</span> Blockchain
+          </a>
+          <a href="public-verify.html" class="nav-item">
+            <span class="nav-icon">✅</span> Public Verify
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Account</div>
+          <a href="notifications.html" class="nav-item">
+            <span class="nav-icon">🔔</span> Notifications
+          </a>
+          <a href="profile.html" class="nav-item">
+            <span class="nav-icon">👤</span> Profile
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-network" id="sidebarNetwork">
+          <span class="sidebar-network-dot" id="networkDot"></span>
+          <span class="sidebar-network-name" id="networkName">Arbitrum Sepolia</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+          <div>
+            <h1 class="topbar-title">Notifications</h1>
+            <div class="topbar-breadcrumb">
+              <a href="dashboard.html">Home</a>
+              <span class="separator">›</span>
+              <span class="current">Notifications</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-wallet" id="walletBtn" type="button">
+            <span class="wallet-dot"></span>
+            <span id="walletAddress">Connect Wallet</span>
+          </button>
+          <div class="notification-container" id="notificationContainer">
+            <button class="topbar-btn" id="notificationBtn" aria-label="Notifications">
+              🔔
+              <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-dropdown-header">
+                <h3>Notifications</h3>
+                <button id="markAllReadBtn" class="btn-text">Mark all read</button>
+              </div>
+              <div class="notification-dropdown-list" id="notificationDropdownList">
+                <div class="notification-empty">Loading notifications...</div>
+              </div>
+              <div class="notification-dropdown-footer">
+                <a href="notifications.html" class="btn-text">View All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <div class="topbar-user" id="userMenu">
+            <div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="card">
+          <div class="card-header" style="justify-content: space-between;">
+            <h4>Your Notifications</h4>
+            <button class="btn btn-outline btn-sm" id="pageMarkAllReadBtn">Mark All Read</button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-container" style="border: none; border-radius: 0;">
+              <div id="fullNotificationsList" style="display: flex; flex-direction: column;">
+                <div class="notification-empty">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/guards.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Check authentication
+    DocuTrade.Auth.requireAuth();
+
+    // Initialize charts and load recent shipments
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load shipments
+      try {
+        const allShipments = await DocuTrade.Shipments.getShipments();
+        const tbody = document.getElementById('recentShipments');
+
+        // Update stats
+        const activeCount = allShipments.filter(s => s.status !== 'delivered' && s.status !== 'closed').length;
+        const pendingCount = allShipments.filter(s => s.status === 'under_review').length;
+        document.getElementById('statShipments').textContent = activeCount;
+        document.getElementById('statPending').textContent = pendingCount;
+
+        if (allShipments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-4">No recent shipments found.</td></tr>';
+        } else {
+          tbody.innerHTML = allShipments.slice(0, 5).map(s => {
+            const originSplit = (s.origin_location || '').split(',')[0];
+            const destSplit = (s.destination_location || '').split(',')[0];
+            const route = `${originSplit} → ${destSplit}`;
+            const docsStr = `${s.docs_approved}/${s.docs_total} ${s.docs_approved > 0 && s.docs_approved === s.docs_total ? '✓' : ''}`;
+
+            return `
+              <tr onclick="window.location='shipment-details.html?id=${s.id}'">
+                <td><span class="font-mono text-sm" style="color: var(--color-cyan-400);">${s.id}</span></td>
+                <td>${route}</td>
+                <td>${DocuTrade.Shipments.getStatusBadge(s.status)}</td>
+                <td>${docsStr}</td>
+                <td class="text-secondary text-sm">${DocuTrade.Shipments.formatDate(s.created_at)}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // ── Dynamic Activity Feed ─────────────────────────────
+        const activityFeed = document.getElementById('activityFeed');
+        const activities = [];
+
+        function timeAgo(dateStr) {
+          const diff = Date.now() - new Date(dateStr).getTime();
+          const mins = Math.floor(diff / 60000);
+          if (mins < 1) return 'Just now';
+          if (mins < 60) return `${mins}m ago`;
+          const hrs = Math.floor(mins / 60);
+          if (hrs < 24) return `${hrs}h ago`;
+          return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        allShipments.forEach(s => {
+          const shortId = s.id.replace('EXP-IND-2026-', 'EXP-');
+          // Shipment creation event
+          activities.push({
+            icon: 'shipment', emoji: '📦',
+            text: `Shipment <strong>${shortId}</strong> created`,
+            time: s.created_at
+          });
+
+          // Document events
+          if (s.documents && s.documents.length > 0) {
+            s.documents.forEach(d => {
+              activities.push({
+                icon: 'document', emoji: '📄',
+                text: `<strong>${d.name}</strong> uploaded for ${shortId}`,
+                time: d.uploaded_at || s.created_at
+              });
+              if (d.status === 'approved') {
+                activities.push({
+                  icon: 'verified', emoji: '✓',
+                  text: `<strong>${d.name}</strong> approved for ${shortId}`,
+                  time: d.uploaded_at || s.created_at
+                });
+              }
+            });
+          }
+
+          // Status events
+          if (s.status === 'in_transit') {
+            activities.push({
+              icon: 'tracking', emoji: '📍',
+              text: `<strong>${shortId}</strong> is now in transit`,
+              time: s.created_at
+            });
+          }
+
+          // Blockchain event for docs that have hashes
+          if (s.docs_approved > 0) {
+            activities.push({
+              icon: 'blockchain', emoji: '⛓',
+              text: `Hash anchored on <strong>Arbitrum</strong> for ${shortId}`,
+              time: s.created_at
+            });
+          }
+        });
+
+        // Sort newest first, take top 8
+        activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+        const topActivities = activities.slice(0, 8);
+
+        if (topActivities.length === 0) {
+          activityFeed.innerHTML = '<div class="text-sm text-secondary" style="padding: var(--space-4);">No recent activity. Create a shipment to get started.</div>';
+        } else {
+          activityFeed.innerHTML = topActivities.map(a => `
+            <div class="activity-item">
+              <div class="activity-icon ${a.icon}">${a.emoji}</div>
+              <div class="activity-content">
+                <div class="activity-text">${a.text}</div>
+                <div class="activity-time">${timeAgo(a.time)}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain — DocuTrade</title>
+  <meta name="description" content="View blockchain network status, wallet connection, smart contracts, and on-chain transaction history.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item active"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Blockchain</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Blockchain</span></div></div></div>
+        <div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-header-left"><h2 class="page-title">Blockchain Dashboard</h2><p class="page-subtitle">Network status, wallet, smart contracts, and on-chain transaction history</p></div>
+        </div>
+
+        <!-- Network Status Cards -->
+        <div class="stats-grid stagger" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="background: rgba(0, 240, 255, 0.1); color: var(--color-cyan-400);">⛓</div>
+            <div class="stat-value">Arbitrum</div>
+            <div class="stat-label">Network</div>
+            <div class="stat-change positive">Sepolia Testnet</div>
+          </div>
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--color-green-400);">🔗</div>
+            <div class="stat-value" style="color: var(--color-green-500);">Connected</div>
+            <div class="stat-label">Status</div>
+            <div class="stat-change positive">Chain ID: 421614</div>
+          </div>
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="background: rgba(232, 114, 42, 0.1); color: var(--color-orange-400);">📊</div>
+            <div class="stat-value">89</div>
+            <div class="stat-label">Total Transactions</div>
+            <div class="stat-change positive">↑ 12 this week</div>
+          </div>
+        </div>
+
+        <div class="grid-2 gap-6">
+          <!-- Wallet -->
+          <div class="card">
+            <div class="card-header"><h4>💳 Wallet</h4></div>
+            <div class="card-body">
+              <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                <div class="detail-row"><span class="detail-label">Wallet Address</span><div class="hash-display">0x82F9a4c1b7E3d5f8A2e6C9b0D4f7a1B3c5E7d9A72C<button class="copy-btn">📋</button></div></div>
+                <div class="detail-row"><span class="detail-label">Balance</span><span class="detail-value">0.0847 ETH</span></div>
+                <div class="detail-row"><span class="detail-label">Provider</span><span class="detail-value">MetaMask</span></div>
+                <div class="detail-row"><span class="detail-label">Network</span><span class="badge badge-approved">Arbitrum Sepolia</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Contracts -->
+          <div class="card">
+            <div class="card-header"><h4>📜 Smart Contracts</h4></div>
+            <div class="card-body">
+              <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                <div><div class="text-xs font-medium text-secondary mb-1">OrganizationRegistry</div><div class="hash-display" style="font-size: 11px;">0x7a3F4b2C1d9E8f0A5B6c7D8e9F0a1B2c3D4e5F6<button class="copy-btn">📋</button></div></div>
+                <div><div class="text-xs font-medium text-secondary mb-1">ShipmentRegistry</div><div class="hash-display" style="font-size: 11px;">0x1A2b3C4d5E6f7A8b9C0d1E2f3A4b5C6d7E8f9A0B<button class="copy-btn">📋</button></div></div>
+                <div><div class="text-xs font-medium text-secondary mb-1">DocumentRegistry</div><div class="hash-display" style="font-size: 11px;">0x9F8e7D6c5B4a3F2e1D0c9B8a7F6e5D4c3B2a1F0E<button class="copy-btn">📋</button></div></div>
+                <div><div class="text-xs font-medium text-secondary mb-1">DocuTradeRegistry</div><div class="hash-display" style="font-size: 11px;">0x4E5f6A7b8C9d0E1f2A3b4C5d6E7f8A9b0C1d2E3F<button class="copy-btn">📋</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaction Status Indicator Example -->
+        <div class="card mt-6 mb-6">
+          <div class="card-header"><h4>Transaction Status</h4><span class="text-sm text-secondary">Last transaction flow</span></div>
+          <div class="card-body">
+            <div class="tx-status">
+              <div class="tx-step completed"><div class="tx-step-icon">✓</div><span class="tx-step-label">Waiting for Wallet</span></div>
+              <div class="tx-step completed"><div class="tx-step-icon">✓</div><span class="tx-step-label">Sign Transaction</span></div>
+              <div class="tx-step completed"><div class="tx-step-icon">✓</div><span class="tx-step-label">Submitting to Arbitrum</span></div>
+              <div class="tx-step completed"><div class="tx-step-icon">✓</div><span class="tx-step-label">Confirming</span></div>
+              <div class="tx-step completed"><div class="tx-step-icon">✓</div><span class="tx-step-label">Confirmed ✓</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+          <div class="card-header"><h4>Recent Transactions</h4></div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-container" style="border: none;">
+              <table class="table">
+                <thead><tr><th>Event</th><th>Transaction Hash</th><th>Block</th><th>Timestamp</th><th>Status</th><th>Explorer</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>ShipmentStatusChanged</strong><br><span class="text-xs text-secondary">EXP-00981 → IN_TRANSIT</span></td>
+                    <td><div class="hash-display" style="max-width: 180px; font-size: 11px;">0x2c7f8a1b3e4d5f6<button class="copy-btn">📋</button></div></td>
+                    <td class="font-mono text-sm">71,235,102</td>
+                    <td class="text-sm">Aug 29 · 2:30 PM</td>
+                    <td><span class="badge badge-approved">✓ Confirmed</span></td>
+                    <td><a href="#" class="btn btn-ghost btn-sm">View ↗</a></td>
+                  </tr>
+                  <tr>
+                    <td><strong>DocumentApproved</strong><br><span class="text-xs text-secondary">Invoice v2 — EXP-00981</span></td>
+                    <td><div class="hash-display" style="max-width: 180px; font-size: 11px;">0x4e2c9f1a7b3d8e5<button class="copy-btn">📋</button></div></td>
+                    <td class="font-mono text-sm">71,234,899</td>
+                    <td class="text-sm">Aug 29 · 10:45 AM</td>
+                    <td><span class="badge badge-approved">✓ Confirmed</span></td>
+                    <td><a href="#" class="btn btn-ghost btn-sm">View ↗</a></td>
+                  </tr>
+                  <tr>
+                    <td><strong>DocumentRegistered</strong><br><span class="text-xs text-secondary">Invoice v2 — EXP-00981</span></td>
+                    <td><div class="hash-display" style="max-width: 180px; font-size: 11px;">0x7f3a4b2c1d9e8f0<button class="copy-btn">📋</button></div></td>
+                    <td class="font-mono text-sm">71,234,891</td>
+                    <td class="text-sm">Aug 29 · 10:42 AM</td>
+                    <td><span class="badge badge-approved">✓ Confirmed</span></td>
+                    <td><a href="#" class="btn btn-ghost btn-sm">View ↗</a></td>
+                  </tr>
+                  <tr>
+                    <td><strong>ShipmentCreated</strong><br><span class="text-xs text-secondary">EXP-00981</span></td>
+                    <td><div class="hash-display" style="max-width: 180px; font-size: 11px;">0x9b1d4f7a2e8c3b6<button class="copy-btn">📋</button></div></td>
+                    <td class="font-mono text-sm">71,234,567</td>
+                    <td class="text-sm">Aug 28 · 2:00 PM</td>
+                    <td><span class="badge badge-approved">✓ Confirmed</span></td>
+                    <td><a href="#" class="btn btn-ghost btn-sm">View ↗</a></td>
+                  </tr>
+                  <tr>
+                    <td><strong>OrganizationVerified</strong><br><span class="text-xs text-secondary">ABC Manufacturing</span></td>
+                    <td><div class="hash-display" style="max-width: 180px; font-size: 11px;">0x5d6e7f8a9b0c1d2<button class="copy-btn">📋</button></div></td>
+                    <td class="font-mono text-sm">71,230,445</td>
+                    <td class="text-sm">Aug 25 · 9:00 AM</td>
+                    <td><span class="badge badge-approved">✓ Confirmed</span></td>
+                    <td><a href="#" class="btn btn-ghost btn-sm">View ↗</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+</body>
+</html>

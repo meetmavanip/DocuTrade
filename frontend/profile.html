@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — DocuTrade</title>
+  <meta name="description" content="Manage your DocuTrade profile, wallet connections, and account settings.">
+  <link rel="stylesheet" href="css/global.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div><nav class="sidebar-nav"><div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div><div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div><div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div><div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div><div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div><div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item active"><span class="nav-icon">👤</span> Profile</a></div></nav><div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar"><div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Profile</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Profile</span></div></div></div><div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user" id="userMenu"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div></header>
+      <div class="page-content" style="max-width: 880px;">
+        <div class="page-header"><div class="page-header-left"><h2 class="page-title">Profile Settings</h2><p class="page-subtitle">Manage your account and wallet connections</p></div></div>
+
+        <!-- Profile Info -->
+        <div class="card mb-6">
+          <div class="card-header"><h4>👤 Personal Information</h4></div>
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-6); margin-bottom: var(--space-6);">
+              <div class="avatar avatar-xl" style="font-size: var(--text-2xl);">DU</div>
+              <div><div class="text-lg font-semibold">Demo User</div><div class="text-sm text-secondary">demo@docutrade.io</div><span class="badge badge-exporter badge-role mt-2">Exporter</span></div>
+            </div>
+            <form>
+              <div class="grid-2 gap-4">
+                <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input" value="Demo"></div>
+                <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" value="User"></div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" value="demo@docutrade.io"></div>
+                <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" placeholder="+91 9876543210"></div>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary mt-4">Save Changes</button>
+                <button type="button" class="btn btn-outline mt-4" onclick="DocuTrade.Auth.logout()" style="border-color: var(--color-red-500); color: var(--color-red-500);">Log Out</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Organization -->
+        <div class="card mb-6">
+          <div class="card-header"><h4>🏢 Organization</h4></div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-row"><span class="detail-label">Organization</span><span class="detail-value">ABC Manufacturing Pvt. Ltd.</span></div>
+              <div class="detail-row"><span class="detail-label">Role</span><span class="badge badge-exporter badge-role">Exporter</span></div>
+              <div class="detail-row"><span class="detail-label">Location</span><span class="detail-value">Rajkot, Gujarat, India</span></div>
+              <div class="detail-row"><span class="detail-label">Status</span><span class="badge badge-dot badge-verified">Verified</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wallet -->
+        <div class="card mb-6">
+          <div class="card-header"><h4>💳 Wallet Connection</h4></div>
+          <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              <div class="detail-row"><span class="detail-label">Connected Wallet</span><div class="hash-display">0x82F9a4c1b7E3d5f8A2e6C9b0D4f7a1B3c5E7d9A72C<button class="copy-btn">📋</button></div></div>
+              <div class="detail-row"><span class="detail-label">Network</span><span class="detail-value">Arbitrum Sepolia (Chain ID: 421614)</span></div>
+              <div class="detail-row"><span class="detail-label">Balance</span><span class="detail-value">0.0847 ETH</span></div>
+              <div class="detail-row"><span class="detail-label">Provider</span><span class="detail-value">MetaMask</span></div>
+            </div>
+            <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+              <button class="btn btn-outline btn-sm">Disconnect Wallet</button>
+              <button class="btn btn-outline btn-sm">Switch Network</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="card mb-6">
+          <div class="card-header"><h4>🔐 Security</h4></div>
+          <div class="card-body">
+            <form id="passwordForm">
+              <div class="form-group"><label class="form-label">Current Password</label><input type="password" id="currentPassword" class="form-input" placeholder="Enter current password" required></div>
+              <div class="grid-2 gap-4">
+                <div class="form-group"><label class="form-label">New Password</label><input type="password" id="newPassword" class="form-input" placeholder="Min. 8 characters" required minlength="8"></div>
+                <div class="form-group"><label class="form-label">Confirm Password</label><input type="password" id="confirmPassword" class="form-input" placeholder="Repeat new password" required minlength="8"></div>
+              </div>
+              <button type="submit" class="btn btn-secondary mt-2" id="updatePasswordBtn">Update Password</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+          <div class="card-header"><h4 style="color: var(--color-red-400);">⚠ Danger Zone</h4></div>
+          <div class="card-body">
+            <p class="text-sm text-secondary mb-4">Once you delete your account, all data will be permanently removed. Blockchain records are immutable and will not be affected.</p>
+            <button class="btn btn-danger btn-sm">Delete Account</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Fetch user data from /auth/me
+      try {
+        const profile = await DocuTrade.API.get('/auth/me');
+        
+        // 2. Populate Header
+        const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User';
+        const initials = (profile.first_name?.[0] || '') + (profile.last_name?.[0] || '');
+        
+        document.querySelector('.avatar-xl').textContent = initials || 'U';
+        document.querySelector('.text-lg.font-semibold').textContent = fullName;
+        document.querySelector('.text-sm.text-secondary').textContent = profile.email || 'No email';
+        document.querySelector('.badge-role.mt-2').textContent = (profile.role || 'Exporter').toUpperCase();
+        
+        // 3. Populate Form
+        const inputs = document.querySelectorAll('.form-input');
+        if (inputs.length >= 3) {
+          inputs[0].value = profile.first_name || '';
+          inputs[1].value = profile.last_name || '';
+          inputs[2].value = profile.email || '';
+        }
+        
+        // 4. Populate Organization
+        const detailValues = document.querySelectorAll('.detail-value');
+        if (detailValues.length > 0) {
+          detailValues[0].textContent = profile.organization_name || 'Independent';
+        }
+        const orgRoleBadge = document.querySelectorAll('.badge-role')[1];
+        if (orgRoleBadge) {
+            orgRoleBadge.textContent = (profile.role || 'Exporter').toUpperCase();
+        }
+        
+        // 5. Populate Wallet if any
+        if (profile.wallet_address && detailValues.length > 1) {
+            const hashDisplay = document.querySelector('.hash-display');
+            if (hashDisplay) {
+                hashDisplay.innerHTML = `${profile.wallet_address}<button class="copy-btn">📋</button>`;
+            }
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+        DocuTrade.Notifications.error('Error', 'Failed to load profile data.');
+      }
+
+      // 6. Handle Password Update
+      const passwordForm = document.getElementById('passwordForm');
+      if (passwordForm) {
+          passwordForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              const currentPassword = document.getElementById('currentPassword').value;
+              const newPassword = document.getElementById('newPassword').value;
+              const confirmPassword = document.getElementById('confirmPassword').value;
+              
+              if (newPassword !== confirmPassword) {
+                  DocuTrade.Notifications.error('Error', 'New passwords do not match');
+                  return;
+              }
+              
+              const btn = document.getElementById('updatePasswordBtn');
+              const originalText = btn.textContent;
+              btn.textContent = 'Updating...';
+              btn.disabled = true;
+              
+              try {
+                  // Connects to /auth/reset-password as placeholder for demo
+                  await DocuTrade.API.post('/auth/reset-password', {
+                      token: "demo-update",
+                      password: newPassword
+                  });
+                  
+                  DocuTrade.Notifications.success('Success', 'Password updated successfully');
+                  passwordForm.reset();
+              } catch (err) {
+                  DocuTrade.Notifications.error('Error', err.message || 'Failed to update password');
+              } finally {
+                  btn.textContent = originalText;
+                  btn.disabled = false;
+              }
+          });
+      }
+    });
+  </script>
+</body>
+</html>

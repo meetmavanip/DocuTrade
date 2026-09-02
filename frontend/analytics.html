@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — DocuTrade</title>
+  <meta name="description" content="Export analytics — shipment volumes, document verification rates, blockchain activity, and more.">
+  <link rel="stylesheet" href="css/global.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div><nav class="sidebar-nav"><div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div><div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div><div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div><div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div><div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item active"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div><div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div></nav><div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar"><div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Analytics</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Analytics</span></div></div></div><div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div></header>
+      <div class="page-content">
+        <div class="page-header"><div class="page-header-left"><h2 class="page-title">Analytics & Insights</h2><p class="page-subtitle">Platform metrics and export intelligence</p></div><div class="page-header-actions"><select class="form-select" style="width: auto;"><option>Last 30 days</option><option>Last 90 days</option><option>This year</option></select></div></div>
+
+        <!-- Stats -->
+        <div class="stats-grid stagger">
+          <div class="stat-card animate-fade-in-up"><div class="stat-icon" style="background: rgba(0, 240, 255, 0.1); color: var(--color-cyan-400);">📦</div><div class="stat-value">158</div><div class="stat-label">Total Shipments</div><div class="stat-change positive">↑ 18% vs last period</div></div>
+          <div class="stat-card animate-fade-in-up"><div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--color-green-400);">✓</div><div class="stat-value">94.2%</div><div class="stat-label">Approval Rate</div><div class="stat-change positive">↑ 2.1%</div></div>
+          <div class="stat-card animate-fade-in-up"><div class="stat-icon" style="background: rgba(226, 118, 27, 0.1); color: var(--color-orange-400);">⛓</div><div class="stat-value">421</div><div class="stat-label">Blockchain Proofs</div><div class="stat-change positive">↑ 34%</div></div>
+          <div class="stat-card animate-fade-in-up"><div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-purple-400);">🔍</div><div class="stat-value">99.8%</div><div class="stat-label">Verification Rate</div><div class="stat-change positive">↑ 0.3%</div></div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid-2 gap-6 mb-6">
+          <div class="chart-card"><div class="chart-card-header"><h4>Monthly Shipment Volume</h4></div><div class="chart-card-body"><canvas id="volumeChart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h4>Shipment Status Distribution</h4></div><div class="chart-card-body"><canvas id="statusChart"></canvas></div></div>
+        </div>
+        <div class="grid-2 gap-6 mb-6">
+          <div class="chart-card"><div class="chart-card-header"><h4>Document Approval Rate</h4></div><div class="chart-card-body"><canvas id="approvalChart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h4>Export Destination Distribution</h4></div><div class="chart-card-body"><canvas id="destinationChart"></canvas></div></div>
+        </div>
+        <div class="grid-2 gap-6">
+          <div class="chart-card"><div class="chart-card-header"><h4>Blockchain Transactions</h4></div><div class="chart-card-body"><canvas id="blockchainChart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-card-header"><h4>Verification Activity</h4></div><div class="chart-card-body"><canvas id="verificationChart"></canvas></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+  <script>
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter';
+    const chartFont = { family: 'Inter', size: 12 };
+    const gridColor = 'rgba(255, 255, 255, 0.05)';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Volume
+      new Chart(document.getElementById('volumeChart'), { type: 'bar', data: { labels: ['Mar','Apr','May','Jun','Jul','Aug'], datasets: [{ label: 'Shipments', data: [18,25,22,30,28,35], backgroundColor: 'rgba(232,114,42,0.8)', borderRadius: 6, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: chartFont } }, y: { grid: { color: gridColor }, ticks: { font: chartFont }, beginAtZero: true } } } });
+
+      // Status
+      new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: ['Delivered','In Transit','Approved','Under Review','Draft'], datasets: [{ data: [45,24,18,14,7], backgroundColor: ['#10B981','#3B82F6','#F59E0B','#8B5CF6','#9CA3AF'], borderWidth: 0, spacing: 2 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12, font: chartFont } } } } });
+
+      // Approval
+      new Chart(document.getElementById('approvalChart'), { type: 'line', data: { labels: ['Mar','Apr','May','Jun','Jul','Aug'], datasets: [{ label: 'Approval %', data: [88,91,89,93,95,94.2], borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10B981' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: chartFont } }, y: { grid: { color: gridColor }, ticks: { font: chartFont, callback: v => v + '%' }, min: 80, max: 100 } } } });
+
+      // Destination
+      new Chart(document.getElementById('destinationChart'), { type: 'bar', data: { labels: ['UAE','Netherlands','Singapore','USA','Kenya','Saudi Arabia'], datasets: [{ label: 'Shipments', data: [42,28,22,18,15,12], backgroundColor: ['#E8722A','#3B82F6','#10B981','#8B5CF6','#F59E0B','#EF4444'], borderRadius: 6, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { font: chartFont }, beginAtZero: true }, y: { grid: { display: false }, ticks: { font: chartFont } } } } });
+
+      // Blockchain
+      new Chart(document.getElementById('blockchainChart'), { type: 'line', data: { labels: ['Mar','Apr','May','Jun','Jul','Aug'], datasets: [{ label: 'Transactions', data: [34,52,48,68,72,89], borderColor: '#E8722A', backgroundColor: 'rgba(232,114,42,0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#E8722A' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: chartFont } }, y: { grid: { color: gridColor }, ticks: { font: chartFont }, beginAtZero: true } } } });
+
+      // Verification
+      new Chart(document.getElementById('verificationChart'), { type: 'bar', data: { labels: ['Mar','Apr','May','Jun','Jul','Aug'], datasets: [{ label: 'Match', data: [28,38,35,52,48,62], backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 6, borderSkipped: false }, { label: 'Mismatch', data: [1,0,2,1,0,1], backgroundColor: 'rgba(239,68,68,0.8)', borderRadius: 6, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: chartFont } } }, scales: { x: { grid: { display: false }, ticks: { font: chartFont }, stacked: true }, y: { grid: { color: gridColor }, ticks: { font: chartFont }, beginAtZero: true, stacked: true } } } });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuTrade | Seller Dashboard</title>
+  <meta name="description"
+    content="DocuTrade dashboard — overview of shipments, documents, verifications and blockchain activity.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">DOCUTRADE</span>
+          <span class="sidebar-brand-tagline">Web3 Verified</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Overview</div>
+          <a href="dashboard.html" class="nav-item active">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Trade</div>
+          <a href="shipments.html" class="nav-item">
+            <span class="nav-icon">📦</span> Shipments
+            <span class="nav-badge">12</span>
+          </a>
+          <a href="create-shipment.html" class="nav-item">
+            <span class="nav-icon">➕</span> New Shipment
+          </a>
+          <a href="documents.html" class="nav-item">
+            <span class="nav-icon">📄</span> Documents
+          </a>
+          <a href="document-verification.html" class="nav-item">
+            <span class="nav-icon">🔍</span> Verify Document
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Tracking</div>
+          <a href="tracking.html" class="nav-item">
+            <span class="nav-icon">🗺️</span> Live Tracking
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Blockchain</div>
+          <a href="blockchain.html" class="nav-item">
+            <span class="nav-icon">⛓</span> Blockchain
+          </a>
+          <a href="public-verify.html" class="nav-item">
+            <span class="nav-icon">✅</span> Public Verify
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Admin</div>
+          <a href="organizations.html" class="nav-item">
+            <span class="nav-icon">🏢</span> Organizations
+          </a>
+          <a href="analytics.html" class="nav-item">
+            <span class="nav-icon">📈</span> Analytics
+          </a>
+          <a href="audit-log.html" class="nav-item">
+            <span class="nav-icon">📋</span> Audit Log
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Account</div>
+          <a href="notifications.html" class="nav-item">
+            <span class="nav-icon">🔔</span> Notifications
+          </a>
+          <a href="profile.html" class="nav-item">
+            <span class="nav-icon">👤</span> Profile
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-network" id="sidebarNetwork">
+          <span class="sidebar-network-dot" id="networkDot"></span>
+          <span class="sidebar-network-name" id="networkName">Arbitrum Sepolia</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+          <div>
+            <h1 class="topbar-title">Dashboard</h1>
+            <div class="topbar-breadcrumb">
+              <a href="dashboard.html">Home</a>
+              <span class="separator">›</span>
+              <span class="current">Dashboard</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-wallet" id="walletBtn" type="button">
+            <span class="wallet-dot"></span>
+            <span id="walletAddress">Connect Wallet</span>
+          </button>
+          <div class="notification-container" id="notificationContainer">
+            <button class="topbar-btn" id="notificationBtn" aria-label="Notifications">
+              🔔
+              <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-dropdown-header">
+                <h3>Notifications</h3>
+                <button id="markAllReadBtn" class="btn-text">Mark all read</button>
+              </div>
+              <div class="notification-dropdown-list" id="notificationDropdownList">
+                <div class="notification-empty">Loading notifications...</div>
+              </div>
+              <div class="notification-dropdown-footer">
+                <a href="notifications.html" class="btn-text">View All Notifications</a>
+              </div>
+            </div>
+          </div>
+          <div class="topbar-user" id="userMenu">
+            <div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid stagger">
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="color: var(--color-cyan-400);">📦</div>
+            <div class="stat-value" id="statShipments">24</div>
+            <div class="stat-label">Active Shipments</div>
+            <div class="stat-change positive">↑ 12% this month</div>
+          </div>
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="color: var(--color-green-400);">📄</div>
+            <div class="stat-value" id="statDocuments">156</div>
+            <div class="stat-label">Documents Verified</div>
+            <div class="stat-change positive">↑ 8% this month</div>
+          </div>
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="color: var(--color-orange-400);">⛓</div>
+            <div class="stat-value" id="statBlockchain">89</div>
+            <div class="stat-label">Blockchain Proofs</div>
+            <div class="stat-change positive">↑ 23% this month</div>
+          </div>
+          <div class="stat-card animate-fade-in-up">
+            <div class="stat-icon" style="color: var(--color-blue-400);">⏳</div>
+            <div class="stat-value" id="statPending">7</div>
+            <div class="stat-label">Pending Reviews</div>
+            <div class="stat-change negative">↓ 3% this month</div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <!-- Left: Charts + Shipments -->
+          <div>
+            <!-- Shipment Volume Chart -->
+            <div class="chart-card mb-6">
+              <div class="chart-card-header">
+                <h4>Shipment Volume</h4>
+                <select class="form-select" style="width: auto; padding: 6px 30px 6px 12px; font-size: var(--text-xs);">
+                  <option>Last 6 months</option>
+                  <option>Last 12 months</option>
+                  <option>This year</option>
+                </select>
+              </div>
+              <div class="chart-card-body">
+                <canvas id="shipmentVolumeChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Recent Shipments -->
+            <div class="card">
+              <div class="card-header">
+                <h4>Recent Shipments</h4>
+                <a href="shipments.html" class="btn btn-ghost btn-sm">View All →</a>
+              </div>
+              <div class="card-body" style="padding: 0;">
+                <div class="table-container" style="border: none; border-radius: 0;">
+                  <table class="table table-clickable">
+                    <thead>
+                      <tr>
+                        <th>Shipment ID</th>
+                        <th>Route</th>
+                        <th>Status</th>
+                        <th>Documents</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentShipments">
+                      <!-- Dynamically populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Activity + Blockchain -->
+          <div>
+            <!-- Activity Feed -->
+            <div class="card mb-6">
+              <div class="card-header">
+                <h4>Recent Activity</h4>
+              </div>
+              <div class="card-body">
+                <div class="activity-feed" id="activityFeed">
+                  <!-- Dynamically populated from shipment data -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Document Status Chart -->
+            <div class="chart-card mb-6">
+              <div class="chart-card-header">
+                <h4>Document Status</h4>
+              </div>
+              <div class="chart-card-body">
+                <canvas id="docStatusChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Blockchain Status -->
+            <div class="card">
+              <div class="card-header">
+                <h4>Blockchain</h4>
+                <span class="badge badge-blockchain">⛓ Arbitrum</span>
+              </div>
+              <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                  <div class="detail-row">
+                    <span class="detail-label">Network</span>
+                    <span class="detail-value">Arbitrum Sepolia (Testnet)</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Connection</span>
+                    <span class="badge badge-dot badge-verified" id="chainStatus">Connected</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Smart Contract</span>
+                    <span class="detail-value mono" style="font-size: var(--text-sm);">0x7a3F...B94E</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Total On-Chain Proofs</span>
+                    <span class="detail-value" style="font-size: 1.5rem; color: var(--color-cyan-400);">89</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <a href="blockchain.html" class="btn btn-outline btn-sm w-full" style="justify-content: center;">View
+                  Blockchain Dashboard →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/guards.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    // Enforce Seller Role
+    DocuTrade.Guards.requireSeller();
+    
+    // Check authentication
+    DocuTrade.Auth.requireAuth();
+
+    // Initialize charts and load recent shipments
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load shipments
+      try {
+        const allShipments = await DocuTrade.Shipments.getShipments();
+        const tbody = document.getElementById('recentShipments');
+
+        // Update stats
+        const activeCount = allShipments.filter(s => s.status !== 'delivered' && s.status !== 'closed').length;
+        const pendingCount = allShipments.filter(s => s.status === 'under_review').length;
+        document.getElementById('statShipments').textContent = activeCount;
+        document.getElementById('statPending').textContent = pendingCount;
+
+        if (allShipments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-4">No recent shipments found.</td></tr>';
+        } else {
+          tbody.innerHTML = allShipments.slice(0, 5).map(s => {
+            const originSplit = (s.origin_location || '').split(',')[0];
+            const destSplit = (s.destination_location || '').split(',')[0];
+            const route = `${originSplit} → ${destSplit}`;
+            const docsStr = `${s.docs_approved}/${s.docs_total} ${s.docs_approved > 0 && s.docs_approved === s.docs_total ? '✓' : ''}`;
+
+            return `
+              <tr onclick="window.location='shipment-details.html?id=${s.id}'">
+                <td><span class="font-mono text-sm" style="color: var(--color-cyan-400);">${s.id}</span></td>
+                <td>${route}</td>
+                <td>${DocuTrade.Shipments.getStatusBadge(s.status)}</td>
+                <td>${docsStr}</td>
+                <td class="text-secondary text-sm">${DocuTrade.Shipments.formatDate(s.created_at)}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // ── Dynamic Activity Feed ─────────────────────────────
+        const activityFeed = document.getElementById('activityFeed');
+        const activities = [];
+
+        function timeAgo(dateStr) {
+          const diff = Date.now() - new Date(dateStr).getTime();
+          const mins = Math.floor(diff / 60000);
+          if (mins < 1) return 'Just now';
+          if (mins < 60) return `${mins}m ago`;
+          const hrs = Math.floor(mins / 60);
+          if (hrs < 24) return `${hrs}h ago`;
+          return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        allShipments.forEach(s => {
+          const shortId = s.id.replace('EXP-IND-2026-', 'EXP-');
+          // Shipment creation event
+          activities.push({
+            icon: 'shipment', emoji: '📦',
+            text: `Shipment <strong>${shortId}</strong> created`,
+            time: s.created_at
+          });
+
+          // Document events
+          if (s.documents && s.documents.length > 0) {
+            s.documents.forEach(d => {
+              activities.push({
+                icon: 'document', emoji: '📄',
+                text: `<strong>${d.name}</strong> uploaded for ${shortId}`,
+                time: d.uploaded_at || s.created_at
+              });
+              if (d.status === 'approved') {
+                activities.push({
+                  icon: 'verified', emoji: '✓',
+                  text: `<strong>${d.name}</strong> approved for ${shortId}`,
+                  time: d.uploaded_at || s.created_at
+                });
+              }
+            });
+          }
+
+          // Status events
+          if (s.status === 'in_transit') {
+            activities.push({
+              icon: 'tracking', emoji: '📍',
+              text: `<strong>${shortId}</strong> is now in transit`,
+              time: s.created_at
+            });
+          }
+
+          // Blockchain event for docs that have hashes
+          if (s.docs_approved > 0) {
+            activities.push({
+              icon: 'blockchain', emoji: '⛓',
+              text: `Hash anchored on <strong>Arbitrum</strong> for ${shortId}`,
+              time: s.created_at
+            });
+          }
+        });
+
+        // Sort newest first, take top 8
+        activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+        const topActivities = activities.slice(0, 8);
+
+        if (topActivities.length === 0) {
+          activityFeed.innerHTML = '<div class="text-sm text-secondary" style="padding: var(--space-4);">No recent activity. Create a shipment to get started.</div>';
+        } else {
+          activityFeed.innerHTML = topActivities.map(a => `
+            <div class="activity-item">
+              <div class="activity-icon ${a.icon}">${a.emoji}</div>
+              <div class="activity-content">
+                <div class="activity-text">${a.text}</div>
+                <div class="activity-time">${timeAgo(a.time)}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+
+      // ── CHART.JS CONFIGURATION FOR DARK THEME ─────────────────────────────
+      Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+      Chart.defaults.font.family = 'Inter';
+
+      // Shipment Volume Bar Chart
+      const volumeCtx = document.getElementById('shipmentVolumeChart').getContext('2d');
+      new Chart(volumeCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+          datasets: [{
+            label: 'Shipments',
+            data: [18, 25, 22, 30, 28, 35],
+            backgroundColor: 'rgba(0, 240, 255, 0.8)',
+            borderColor: 'rgba(0, 240, 255, 1)',
+            borderWidth: 1,
+            borderRadius: 6,
+            borderSkipped: false,
+          }, {
+            label: 'Verified',
+            data: [15, 22, 20, 27, 26, 32],
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+            borderColor: 'rgba(16, 185, 129, 1)',
+            borderWidth: 1,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: { boxWidth: 12, padding: 16 }
+            }
+          },
+          scales: {
+            x: { 
+              grid: { display: false, color: 'rgba(255,255,255,0.1)' } 
+            },
+            y: { 
+              grid: { color: 'rgba(255,255,255,0.1)' }, 
+              beginAtZero: true 
+            }
+          }
+        }
+      });
+
+      // Document Status Doughnut
+      const docCtx = document.getElementById('docStatusChart').getContext('2d');
+      new Chart(docCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Approved', 'Pending', 'Under Review', 'Rejected'],
+          datasets: [{
+            data: [112, 18, 14, 12],
+            backgroundColor: ['#10B981', '#F59E0B', '#00F0FF', '#EF4444'],
+            borderColor: 'rgba(11, 17, 33, 1)',
+            borderWidth: 2,
+            spacing: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '75%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { boxWidth: 10, padding: 12 }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Tracking — DocuTrade</title>
+  <meta name="description" content="Track shipment locations in real-time with interactive maps.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tracking.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div>
+        <div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div>
+        <div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item active"><span class="nav-icon">🗺️</span> Live Tracking</a></div>
+        <div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div>
+        <div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div>
+        <div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Live Tracking</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Live Tracking</span></div></div></div>
+        <div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-header-left"><h2 class="page-title">🚢 Shipment Tracking</h2><p class="page-subtitle" id="trackingSubtitle">Loading…</p></div>
+          <div class="page-header-actions" style="display: flex; gap: var(--space-2);">
+            <div style="display: flex;">
+              <input type="text" id="searchInput" class="form-input" placeholder="Search Shipment, MMSI, Vessel..." style="width: 250px; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+              <button class="btn btn-secondary" id="searchBtn" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">Search</button>
+            </div>
+            <select class="form-select" id="shipmentSelect" style="width: 280px;">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+
+        <div class="tracking-layout">
+          <!-- Map -->
+          <div>
+            <div class="map-container">
+              <div class="map-demo-banner" id="aisStatusBanner">Fetching Tracking Data...</div>
+              <div class="map-main" id="trackingMap" style="height: 560px;"></div>
+            </div>
+          </div>
+
+          <!-- Panel -->
+          <div class="tracking-panel">
+            <div class="location-card">
+              <div class="location-card-header"><h4>🚢 Current Position</h4><div class="location-live-dot">Live</div></div>
+              <div class="location-coords">
+                <div class="coord-item"><span class="coord-label">Latitude</span><span class="coord-value" id="currentLat">18.4217° N</span></div>
+                <div class="coord-item"><span class="coord-label">Longitude</span><span class="coord-value" id="currentLng">65.0231° E</span></div>
+              </div>
+              <div class="location-stats">
+                <div class="location-stat"><span class="location-stat-label">Speed</span><span class="location-stat-value" id="currentSpeed">17.8 kn</span></div>
+                <div class="location-stat"><span class="location-stat-label">Heading</span><span class="location-stat-value" id="currentHeading">287°</span></div>
+                <div class="location-stat"><span class="location-stat-label">ETA</span><span class="location-stat-value">Sep 02</span></div>
+                <div class="location-stat"><span class="location-stat-label">Updated</span><span class="location-stat-value" id="lastUpdate">Just now</span></div>
+              </div>
+              <div class="demo-banner mt-4" id="dataStatusBanner" style="display: none;"></div>
+            </div>
+
+            <div class="voyage-info" id="voyageInfoContainer" style="display: none;">
+              <div class="voyage-info-title">Voyage Progress</div>
+              <div class="voyage-progress">
+                <div class="voyage-progress-bar"><div class="voyage-progress-fill" id="voyageProgress" style="width: 0%;"></div></div>
+                <div class="voyage-progress-labels"><span id="voyageOrigin">—</span><span id="voyageDest">—</span></div>
+              </div>
+              <div class="voyage-stats">
+                <div class="voyage-stat"><div class="voyage-stat-value" id="voyagePercent">—</div><div class="voyage-stat-label">Complete</div></div>
+                <div class="voyage-stat"><div class="voyage-stat-value" style="font-size: 14px;">Tracking<br/>Distance</div></div>
+                <div class="voyage-stat"><div class="voyage-stat-value" style="font-size: 14px;">Calculations<br/>Unavailable</div></div>
+              </div>
+            </div>
+
+            <div class="location-card" id="routeOverviewContainer" style="display: none;">
+              <h4 style="font-size: var(--text-base); font-weight: 600; margin-bottom: var(--space-4);">Route Overview</h4>
+              <div class="route-overview" id="routeOverviewList">
+              </div>
+            </div>
+
+            <!-- Location History -->
+            <div class="location-card" id="locationHistoryContainer" style="display: none;">
+              <h4 style="font-size: var(--text-base); font-weight: 600; margin-bottom: var(--space-4);">Location History</h4>
+              <div style="display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-sm);" id="locationHistoryList">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+  <script src="js/shipments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // ── Populate shipment selector ──
+      const select = document.getElementById('shipmentSelect');
+      const subtitle = document.getElementById('trackingSubtitle');
+      let shipments = [];
+      try {
+        shipments = await DocuTrade.Shipments.getShipments();
+      } catch(e) { console.error(e); }
+
+      if (shipments.length === 0) {
+        select.innerHTML = '<option value="">No shipments found</option>';
+        subtitle.textContent = 'No shipments available';
+      } else {
+        select.innerHTML = shipments.map(s => {
+          const o = (s.origin_location || '').split(',')[0];
+          const d = (s.destination_location || '').split(',')[0];
+          let text = `${s.id} · ${o} → ${d}`;
+          if (s.mmsi || s.vessel_name) {
+              text += ` (${s.vessel_name || 'Vessel'} - MMSI: ${s.mmsi || 'N/A'})`;
+          }
+          return `<option value="${s.id}">${text}</option>`;
+        }).join('');
+      }
+
+      document.getElementById('searchBtn').addEventListener('click', () => {
+          const val = document.getElementById('searchInput').value.trim();
+          if(val) updateTrackingUI(val);
+      });
+      document.getElementById('searchInput').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+              const val = e.target.value.trim();
+              if(val) updateTrackingUI(val);
+          }
+      });
+
+      // ── Map setup ──
+      let map = L.map('trackingMap').setView([20, 62], 3);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
+      
+      const shipIcon = L.divIcon({ className: 'ship-marker', html: '<div class="ship-marker-inner">🚢</div>', iconSize: [32, 32], iconAnchor: [16, 16] });
+      let shipMarker = null;
+
+      async function updateTrackingUI(shipmentId) {
+        const searchVal = String(shipmentId).trim().toLowerCase();
+
+        // Debug: log what we're matching against so mismatches are visible in devtools.
+        console.debug('[Tracking] Searching for:', searchVal);
+        console.debug('[Tracking] Available shipments:', shipments.map(sh => ({
+          id: sh.id,
+          mmsi: sh.mmsi,
+          vessel_name: sh.vessel_name
+        })));
+
+        let s = shipments.find(sh => {
+          const idMatch     = sh.id != null && String(sh.id).trim().toLowerCase() === searchVal;
+          const mmsiMatch   = sh.mmsi != null && String(sh.mmsi).trim().toLowerCase() === searchVal;
+          const vesselMatch = sh.vessel_name != null && String(sh.vessel_name).trim().toLowerCase() === searchVal;
+          return idMatch || mmsiMatch || vesselMatch;
+        });
+        
+        // If not in local array, attempt direct backend lookup via /tracking/:id
+        if (!s) {
+          try {
+            const direct = await DocuTrade.API.get(`/tracking/${encodeURIComponent(searchVal)}`);
+            if (direct && (direct.shipment_id || direct.mmsi)) {
+              // Refresh shipment selector with latest data
+              try {
+                const refreshed = await DocuTrade.Shipments.getShipments();
+                if (refreshed && refreshed.length > 0) {
+                  shipments = refreshed;
+                  select.innerHTML = shipments.map(item => {
+                    const o = (item.origin_location || '').split(',')[0];
+                    const d = (item.destination_location || '').split(',')[0];
+                    let text = `${item.id} · ${o} → ${d}`;
+                    if (item.mmsi || item.vessel_name) {
+                      text += ` (${item.vessel_name || 'Vessel'} - MMSI: ${item.mmsi || 'N/A'})`;
+                    }
+                    return `<option value="${item.id}">${text}</option>`;
+                  }).join('');
+                }
+              } catch (_) {}
+
+              s = shipments.find(item => 
+                (item.id && item.id === direct.shipment_id) || 
+                (item.mmsi && item.mmsi === direct.mmsi)
+              ) || {
+                id: direct.shipment_id || searchVal,
+                mmsi: direct.mmsi,
+                vessel_name: direct.vessel_name,
+                origin_location: '',
+                destination_location: ''
+              };
+            }
+          } catch (lookupErr) {
+            console.warn('[Tracking] Direct lookup error:', lookupErr);
+          }
+        }
+
+        if (!s) {
+            console.warn('[Tracking] No match found for', searchVal, '— check that /shipments actually returns mmsi/vessel_name for this shipment.');
+            DocuTrade.Notifications.error('Not Found', 'No shipment found matching that ID, MMSI, or Vessel Name.');
+            return;
+        }
+
+        if (select && s.id) {
+          select.value = s.id;
+        }
+        
+        const searchId = s.id || shipmentId;
+        const o = (s.origin_location || '').split(',')[0];
+        const d = (s.destination_location || '').split(',')[0];
+        subtitle.textContent = `${searchId} · ${o} → ${d}`;
+        
+        let trackingData;
+        try {
+            trackingData = await DocuTrade.API.get(`/tracking/${searchId}`);
+        } catch(e) {
+            console.error('Tracking fetch failed', e);
+            document.getElementById('aisStatusBanner').textContent = '⚠ TRACKING UNAVAILABLE';
+            document.getElementById('aisStatusBanner').style.background = '#EF4444';
+            return;
+        }
+        
+        // Update UI Text
+        if(trackingData.vessel_name) {
+            subtitle.textContent = `Shipment ${trackingData.shipment_id} · Vessel: ${trackingData.vessel_name} (MMSI: ${trackingData.mmsi})`;
+        }
+        document.getElementById('currentSpeed').textContent = trackingData.speed ? trackingData.speed + ' kn' : 'N/A';
+        document.getElementById('currentHeading').textContent = trackingData.course ? trackingData.course + '°' : 'N/A';
+        
+        if (trackingData.last_update) {
+            const date = new Date(trackingData.last_update);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            let timeStr = "";
+            if (diffMins < 2) {
+                timeStr = "Live (Just now)";
+            } else if (diffMins < 60) {
+                timeStr = `${diffMins} minutes ago`;
+            } else {
+                timeStr = `Stale (${date.toLocaleDateString()} ${date.toLocaleTimeString()})`;
+            }
+            document.getElementById('lastUpdate').textContent = timeStr;
+        } else {
+            document.getElementById('lastUpdate').textContent = "Waiting for AIS position";
+        }
+
+        const dataBanner = document.getElementById('dataStatusBanner');
+        const aisBanner = document.getElementById('aisStatusBanner');
+
+        // Map logic
+        if (trackingData.latitude && trackingData.longitude) {
+            aisBanner.textContent = '🟢 LIVE AIS DATA ACTIVE';
+            aisBanner.style.background = '#10B981';
+            dataBanner.style.display = 'none';
+
+            if(shipMarker) map.removeLayer(shipMarker);
+            if(window.routeLine) map.removeLayer(window.routeLine);
+            if(window.originMarker) map.removeLayer(window.originMarker);
+            if(window.destMarker) map.removeLayer(window.destMarker);
+            
+            const lat = parseFloat(trackingData.latitude);
+            const lng = parseFloat(trackingData.longitude);
+
+            let rotationHtml = '';
+            if (trackingData.course) {
+                rotationHtml = `transform: rotate(${trackingData.course}deg);`;
+            }
+            
+            const dynamicShipIcon = L.divIcon({ 
+                className: 'ship-marker', 
+                html: `<div class="ship-marker-inner" style="${rotationHtml}">🚢</div>`, 
+                iconSize: [36, 36], 
+                iconAnchor: [18, 18] 
+            });
+            
+            shipMarker = L.marker([lat, lng], { icon: dynamicShipIcon }).addTo(map)
+                .bindPopup(`<div class="popup-title">🚢 ${trackingData.vessel_name || 'Vessel'}</div><div class="popup-detail"><b>MMSI:</b> ${trackingData.mmsi || 'N/A'}<br><b>Status:</b> ${trackingData.vessel_status || 'Under Way'}<br><b>Speed:</b> ${trackingData.speed ? trackingData.speed + ' kn' : '14.6 kn'}<br><b>Heading:</b> ${trackingData.course ? trackingData.course + '°' : '284°'}</div>`).openPopup();
+            
+            // Port markers
+            const originCoords = [22.75, 69.70]; // Mundra / Gujarat Port
+            const destCoords = [25.01, 55.06];   // Jebel Ali / Dubai Port
+
+            const portIcon = (name, color) => L.divIcon({
+                className: 'port-marker',
+                html: `<div style="background:${color}; color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:12px; border:2px solid #fff; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.5);">${name}</div>`,
+                iconSize: [90, 24],
+                iconAnchor: [45, 12]
+            });
+
+            const oName = (trackingData.origin_location || s.origin_location || 'Origin Port').split(',')[0];
+            const dName = (trackingData.destination_location || s.destination_location || 'Destination Port').split(',')[0];
+
+            window.originMarker = L.marker(originCoords, { icon: portIcon('📍 ' + oName, '#3B82F6') }).addTo(map)
+                .bindPopup(`<b>Origin:</b> ${oName}`);
+            window.destMarker = L.marker(destCoords, { icon: portIcon('🏁 ' + dName, '#10B981') }).addTo(map)
+                .bindPopup(`<b>Destination:</b> ${dName}`);
+
+            // Draw route navigation polyline
+            window.routeLine = L.polyline([originCoords, [lat, lng], destCoords], {
+                color: '#06B6D4',
+                weight: 3,
+                dashArray: '8, 8',
+                opacity: 0.85
+            }).addTo(map);
+
+            const bounds = L.latLngBounds([originCoords, [lat, lng], destCoords]);
+            map.fitBounds(bounds, { padding: [50, 50] });
+            
+            document.getElementById('currentLat').textContent = lat.toFixed(4) + '° N';
+            document.getElementById('currentLng').textContent = lng.toFixed(4) + '° E';
+        } else {
+            aisBanner.textContent = '⚠ WAITING FOR AIS POSITION REPORT...';
+            aisBanner.style.background = '#F59E0B';
+            
+            document.getElementById('currentLat').textContent = 'Unknown';
+            document.getElementById('currentLng').textContent = 'Unknown';
+            if(shipMarker) map.removeLayer(shipMarker);
+            if(window.routeLine) map.removeLayer(window.routeLine);
+            if(window.originMarker) map.removeLayer(window.originMarker);
+            if(window.destMarker) map.removeLayer(window.destMarker);
+        }
+      }
+
+      if (shipments.length > 0) {
+        updateTrackingUI(shipments[0].id);
+      }
+
+      select.addEventListener('change', (e) => {
+        updateTrackingUI(e.target.value);
+      });
+      
+      // Auto refresh every 5 mins
+      setInterval(() => {
+         if(select.value) updateTrackingUI(select.value);
+      }, 300000);
+    });
+  </script>
+</body>
+</html>

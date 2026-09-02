@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: docutrade
+      POSTGRES_PASSWORD: docutrade_password
+      POSTGRES_DB: docutrade
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Can map ./backend/migrations here to run on init if needed
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://docutrade:docutrade_password@db:5432/docutrade
+      - JWT_SECRET=super_secret_production_key
+      - ARBITRUM_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
+    depends_on:
+      - db
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+volumes:
+  postgres_data:

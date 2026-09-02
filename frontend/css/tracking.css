@@ -1,0 +1,355 @@
+/* ============================================================
+   DocuTrade — Tracking & Map Styles
+   ============================================================ */
+
+/* ================================================================
+   MAP CONTAINER
+   ================================================================ */
+.map-container {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background: var(--color-navy-900);
+}
+
+.map-main {
+  height: 500px;
+  width: 100%;
+}
+
+.map-overlay-controls {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.map-control-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+.map-control-btn:hover {
+  background: var(--color-gray-50);
+  color: var(--text-primary);
+}
+
+/* Demo GPS Banner on Map */
+.map-demo-banner {
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  padding: var(--space-2) var(--space-5);
+  background: rgba(245, 158, 11, 0.95);
+  backdrop-filter: blur(4px);
+  color: var(--color-white);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ================================================================
+   TRACKING PANEL (Sidebar info on map page)
+   ================================================================ */
+.tracking-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-5);
+}
+
+.tracking-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Location Card */
+.location-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.location-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.location-card-header h4 {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.location-live-dot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-green-500);
+  font-weight: 500;
+}
+.location-live-dot::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-green-400);
+  box-shadow: 0 0 8px var(--color-green-400);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.location-coords {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.coord-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.coord-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.coord-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.location-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+.location-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+}
+.location-stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+.location-stat-value {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ================================================================
+   ROUTE VISUALIZATION
+   ================================================================ */
+.route-overview {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: var(--space-6);
+}
+.route-overview::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--border-light);
+}
+
+.route-point {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  position: relative;
+}
+.route-point-dot {
+  position: absolute;
+  left: calc(-1 * var(--space-6));
+  top: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface-primary);
+  border: 2px solid var(--border-medium);
+  z-index: 1;
+}
+.route-point-dot.origin {
+  border-color: var(--color-green-500);
+  background: var(--color-green-500);
+}
+.route-point-dot.current {
+  border-color: var(--color-orange-500);
+  background: var(--color-orange-500);
+  box-shadow: 0 0 0 4px var(--color-orange-100);
+}
+.route-point-dot.destination {
+  border-color: var(--color-blue-500);
+  background: var(--color-blue-500);
+}
+.route-point-dot.completed {
+  border-color: var(--color-green-500);
+  background: var(--color-green-500);
+}
+
+.route-point-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.route-point-detail {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+.route-point-time {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* ================================================================
+   SHIP MARKER (Custom Leaflet marker)
+   ================================================================ */
+.ship-marker {
+  background: none;
+  border: none;
+}
+.ship-marker-inner {
+  width: 32px;
+  height: 32px;
+  background: var(--color-orange-500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(232, 114, 42, 0.4);
+  position: relative;
+}
+.ship-marker-inner::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--color-orange-300);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.port-marker-inner {
+  width: 24px;
+  height: 24px;
+  background: var(--color-navy-700);
+  border: 2px solid var(--color-navy-400);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Leaflet Popup Overrides */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-xl) !important;
+  border: 1px solid var(--border-light) !important;
+}
+.leaflet-popup-content {
+  margin: var(--space-3) var(--space-4) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--text-sm) !important;
+}
+.leaflet-popup-content .popup-title {
+  font-weight: 600;
+  font-size: var(--text-base);
+  margin-bottom: var(--space-1);
+}
+.leaflet-popup-content .popup-detail {
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+/* ================================================================
+   ETA / VOYAGE INFO
+   ================================================================ */
+.voyage-info {
+  background: var(--color-navy-800);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  color: var(--color-white);
+}
+.voyage-info-title {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-gray-400);
+  margin-bottom: var(--space-4);
+}
+.voyage-progress {
+  margin-bottom: var(--space-4);
+}
+.voyage-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+.voyage-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-green-400), var(--color-orange-400));
+  border-radius: var(--radius-full);
+  transition: width 1s ease;
+}
+.voyage-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+}
+.voyage-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+.voyage-stat {
+  text-align: center;
+}
+.voyage-stat-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-orange-300);
+}
+.voyage-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}

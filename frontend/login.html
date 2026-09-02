@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — DocuTrade</title>
+  <meta name="description" content="Log in to DocuTrade with email or MetaMask wallet to manage your export shipments and documents.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* Dark 3D Theme for Auth Pages */
+    body { 
+      background: var(--color-navy-900); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      min-height: 100vh;
+      background-image: radial-gradient(circle at top right, rgba(0, 240, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(232, 114, 42, 0.05), transparent 40%);
+    }
+    
+    .auth-container { width: 100%; max-width: 440px; padding: var(--space-6); position: relative; z-index: 1; }
+    
+    .auth-brand { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-10); }
+    .auth-logo { 
+      width: 48px; height: 48px; 
+      background: linear-gradient(135deg, var(--color-blue-500), var(--color-cyan-500)); 
+      border-radius: var(--radius-lg); 
+      display: flex; align-items: center; justify-content: center; 
+      font-weight: 800; font-size: var(--text-2xl); color: var(--color-navy-900);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+    .auth-brand-name { font-size: 1.5rem; font-weight: 800; color: var(--color-white); letter-spacing: 1px; }
+    
+    .auth-card { 
+      background: rgba(11, 17, 33, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+      border-radius: var(--radius-xl); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02); 
+      padding: var(--space-10) var(--space-8); 
+    }
+    .auth-title { font-size: var(--text-2xl); font-weight: 800; color: var(--color-white); margin-bottom: var(--space-2); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .auth-subtitle { font-size: var(--text-base); color: var(--color-cyan-400); margin-bottom: var(--space-8); }
+    
+    .auth-footer { text-align: center; margin-top: var(--space-8); font-size: var(--text-sm); color: var(--color-gray-400); }
+    .auth-footer a { font-weight: 600; color: var(--color-cyan-500); text-decoration: none; transition: all var(--transition-fast); }
+    .auth-footer a:hover { color: var(--color-cyan-400); text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+    
+    .wallet-login-section { margin-top: var(--space-6); }
+    .btn-metamask { 
+      width: 100%; 
+      background: rgba(226, 118, 27, 0.1); 
+      color: #E2761B; 
+      border: 1px solid rgba(226, 118, 27, 0.3); 
+      padding: 12px; font-size: var(--text-base); font-weight: 600; 
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-metamask:hover:not(:disabled) { 
+      background: rgba(226, 118, 27, 0.2);
+      box-shadow: 0 0 15px rgba(226, 118, 27, 0.2); 
+      transform: translateY(-2px);
+    }
+    
+    .auth-error { 
+      display: none; padding: var(--space-3) var(--space-4); 
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); 
+      border-radius: var(--radius-md); color: var(--color-red-400); 
+      font-size: var(--text-sm); margin-bottom: var(--space-5); 
+    }
+    .auth-error.visible { display: block; animation: fadeInDown var(--transition-base) ease; }
+    
+    .divider-text {
+      display: flex; align-items: center; text-align: center; color: var(--color-gray-500); font-size: var(--text-xs); margin: var(--space-6) 0;
+    }
+    .divider-text::before, .divider-text::after {
+      content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .divider-text:not(:empty)::before { margin-right: 1em; }
+    .divider-text:not(:empty)::after { margin-left: 1em; }
+
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-brand">
+      <div class="auth-logo">D</div>
+      <span class="auth-brand-name">DOCUTRADE</span>
+    </div>
+
+    <div class="auth-card">
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Log in to manage your shipments and documents.</p>
+
+      <div class="auth-error" id="authError"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" class="form-input" placeholder="you@company.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="form-checkbox-group">
+            <input type="checkbox" id="remember" class="form-checkbox">
+            <label for="remember" class="text-sm" style="color:var(--text-secondary)">Remember me</label>
+          </div>
+          <a href="#" class="text-sm" style="color:var(--color-cyan-500); text-decoration:none;">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" style="width:100%" id="loginBtn">Log In</button>
+      </form>
+
+      <div class="divider-text">or continue with</div>
+
+      <div class="wallet-login-section">
+        <button class="btn-metamask" id="walletLoginBtn" type="button">
+          🦊 Connect MetaMask
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="register.html">Create one</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/guards.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errorEl = document.getElementById('authError');
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
+      errorEl.classList.remove('visible');
+
+      try {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        await DocuTrade.Auth.login(email, password);
+        // auth.js now handles the redirect based on role
+      } catch (err) {
+        errorEl.textContent = err.message || 'Login failed. Please try again.';
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Log In';
+      }
+    });
+
+    document.getElementById('walletLoginBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('walletLoginBtn');
+      const errorEl = document.getElementById('authError');
+      btn.disabled = true;
+      btn.textContent = 'Connecting...';
+      errorEl.classList.remove('visible');
+
+      try {
+        await DocuTrade.Auth.walletLogin();
+        // auth.js now handles the redirect based on role
+      } catch (err) {
+        errorEl.textContent = err.message || 'Wallet connection failed.';
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = '🦊 Connect MetaMask';
+      }
+    });
+  </script>
+</body>
+</html>

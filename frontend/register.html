@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — DocuTrade</title>
+  <meta name="description" content="Create a DocuTrade account to start managing export shipments with blockchain verification.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* Dark 3D Theme for Auth Pages */
+    body { 
+      background: var(--color-navy-900); 
+      display: flex; align-items: center; justify-content: center; 
+      min-height: 100vh; padding: var(--space-6) 0; 
+      background-image: radial-gradient(circle at top right, rgba(0, 240, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(232, 114, 42, 0.05), transparent 40%);
+    }
+    .auth-container { width: 100%; max-width: 460px; padding: var(--space-6); position: relative; z-index: 1; }
+    
+    .auth-brand { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); }
+    .auth-logo { 
+      width: 48px; height: 48px; 
+      background: linear-gradient(135deg, var(--color-blue-500), var(--color-cyan-500)); 
+      border-radius: var(--radius-lg); 
+      display: flex; align-items: center; justify-content: center; 
+      font-weight: 800; font-size: var(--text-2xl); color: var(--color-navy-900); 
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+    .auth-brand-name { font-size: 1.5rem; font-weight: 800; color: var(--color-white); letter-spacing: 1px; }
+    
+    .auth-card { 
+      background: rgba(11, 17, 33, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+      border-radius: var(--radius-xl); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02); 
+      padding: var(--space-8) var(--space-8); 
+    }
+    .auth-title { font-size: var(--text-2xl); font-weight: 800; color: var(--color-white); margin-bottom: var(--space-1); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .auth-subtitle { font-size: var(--text-base); color: var(--color-cyan-400); margin-bottom: var(--space-6); }
+    
+    .auth-footer { text-align: center; margin-top: var(--space-8); font-size: var(--text-sm); color: var(--color-gray-400); }
+    .auth-footer a { font-weight: 600; color: var(--color-cyan-500); text-decoration: none; transition: all var(--transition-fast); }
+    .auth-footer a:hover { color: var(--color-cyan-400); text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+    
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+    
+    .auth-error { 
+      display: none; padding: var(--space-3) var(--space-4); 
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); 
+      border-radius: var(--radius-md); color: var(--color-red-400); 
+      font-size: var(--text-sm); margin-bottom: var(--space-5); 
+    }
+    .auth-error.visible { display: block; animation: fadeInDown var(--transition-base) ease; }
+    
+    .password-strength { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); margin-top: var(--space-3); overflow: hidden; }
+    .password-strength-fill { height: 100%; border-radius: 2px; transition: width var(--transition-base), background var(--transition-base); }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-brand">
+      <div class="auth-logo">D</div>
+      <span class="auth-brand-name">DOCUTRADE</span>
+    </div>
+
+    <div class="auth-card">
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Start verifying exports with blockchain proof.</p>
+
+      <div class="auth-error" id="authError"></div>
+
+      <form id="registerForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label form-required" for="firstName">First Name</label>
+            <input type="text" id="firstName" class="form-input" placeholder="John" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label form-required" for="lastName">Last Name</label>
+            <input type="text" id="lastName" class="form-input" placeholder="Doe" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-required" for="email">Email Address</label>
+          <input type="email" id="email" class="form-input" placeholder="you@company.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-required" for="organization">Organization</label>
+          <input type="text" id="organization" class="form-input" placeholder="ABC Manufacturing Pvt. Ltd.">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-required" for="role">Role</label>
+          <select id="role" class="form-select" required>
+            <option value="">Select your role</option>
+            <option value="seller">Seller</option>
+            <option value="buyer">Buyer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-required" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Min. 8 characters" required minlength="8" autocomplete="new-password">
+          <div class="password-strength">
+            <div class="password-strength-fill" id="passwordStrength"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label form-required" for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat password" required autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <div class="form-checkbox-group">
+            <input type="checkbox" id="terms" class="form-checkbox" required>
+            <label for="terms" class="text-sm" style="color:var(--text-secondary)">I agree to the Terms of Service and Privacy Policy</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="width:100%" id="registerBtn">Create Account</button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/guards.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', (e) => {
+      const val = e.target.value;
+      const fill = document.getElementById('passwordStrength');
+      let strength = 0;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      const colors = ['var(--color-red-500)', 'var(--color-orange-400)', 'var(--color-cyan-400)', 'var(--color-green-400)'];
+      fill.style.width = (strength * 25) + '%';
+      fill.style.background = colors[strength - 1] || 'transparent';
+      fill.style.boxShadow = strength > 0 ? `0 0 10px ${colors[strength - 1]}` : 'none';
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('registerBtn');
+      const errorEl = document.getElementById('authError');
+      errorEl.classList.remove('visible');
+
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      if (password !== confirm) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      try {
+        await DocuTrade.Auth.register({
+          first_name: document.getElementById('firstName').value.trim(),
+          last_name: document.getElementById('lastName').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          organization: document.getElementById('organization').value.trim(),
+          role: document.getElementById('role').value,
+          password: password,
+        });
+        // auth.js now handles the redirect based on role
+      } catch (err) {
+        errorEl.textContent = err.message || 'Registration failed. Please try again.';
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

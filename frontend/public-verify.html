@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify — DocuTrade</title>
+  <meta name="description" content="Publicly verify the authenticity of a DocuTrade shipment and its documents — no login required.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    body { 
+      background: var(--color-navy-900); 
+      background-image: radial-gradient(circle at top right, rgba(0, 240, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(232, 114, 42, 0.05), transparent 40%);
+    }
+    .verify-page { max-width: 800px; margin: 0 auto; padding: var(--space-8) var(--space-6); position: relative; z-index: 1; }
+    .verify-brand { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); }
+    .verify-logo { 
+      width: 48px; height: 48px; 
+      background: linear-gradient(135deg, var(--color-blue-500), var(--color-cyan-500)); 
+      border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; 
+      font-weight: 800; font-size: var(--text-2xl); color: var(--color-navy-900); 
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+    .verify-brand-name { font-size: 1.5rem; font-weight: 800; color: var(--color-white); letter-spacing: 1px; }
+
+    .verify-hero { 
+      text-align: center; padding: var(--space-10) var(--space-6); 
+      background: rgba(11, 17, 33, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-xl); 
+      color: white; margin-bottom: var(--space-8); position: relative; overflow: hidden; 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+    }
+    .verify-hero::before { content: ''; position: absolute; top: -50%; right: -30%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(0, 240, 255, 0.15), transparent 70%); pointer-events: none; }
+    .verify-hero-badge { display: inline-flex; align-items: center; gap: var(--space-2); padding: 6px 16px; background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.4); border-radius: var(--radius-full); color: var(--color-green-400); font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-4); }
+    .verify-hero-title { font-size: var(--text-3xl); font-weight: 700; margin-bottom: var(--space-2); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .verify-hero-id { font-family: var(--font-mono); font-size: var(--text-lg); color: var(--color-cyan-400); }
+
+    .verify-search { margin-bottom: var(--space-8); }
+    .verify-search-box { display: flex; gap: var(--space-3); }
+    .verify-search-box input { flex: 1; }
+
+    .verify-section { margin-bottom: var(--space-6); }
+    .verify-checks { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-6); }
+    .verify-check-card { 
+      padding: var(--space-5); border-radius: var(--radius-lg); display: flex; align-items: center; gap: var(--space-4); 
+      background: rgba(11, 17, 33, 0.7); backdrop-filter: blur(10px);
+    }
+    .verify-check-card.pass { border: 1px solid rgba(16, 185, 129, 0.3); }
+    .verify-check-card.pass .check-icon { background: rgba(16, 185, 129, 0.2); color: var(--color-green-400); }
+    .verify-check-card.info { border: 1px solid rgba(0, 240, 255, 0.3); }
+    .verify-check-card.info .check-icon { background: rgba(0, 240, 255, 0.2); color: var(--color-cyan-400); }
+    .check-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--text-lg); flex-shrink: 0; }
+    .check-label { font-size: var(--text-base); font-weight: 600; color: var(--color-white); }
+    .check-detail { font-size: var(--text-sm); color: var(--color-gray-400); margin-top: 1px; }
+
+    .verify-footer { text-align: center; padding: var(--space-8) 0; border-top: 1px solid rgba(255,255,255,0.1); margin-top: var(--space-8); }
+    .verify-footer-text { font-size: var(--text-sm); color: var(--color-gray-500); }
+  </style>
+</head>
+<body>
+
+  <div class="verify-page">
+    <!-- Brand -->
+    <div class="verify-brand">
+      <div class="verify-logo">D</div>
+      <span class="verify-brand-name">DOCUTRADE</span>
+    </div>
+
+    <!-- Search -->
+    <div class="verify-search">
+      <div class="verify-search-box">
+        <input type="text" class="form-input" id="verifySearchInput" placeholder="Enter Shipment ID (e.g. EXP-IND-2026-00981)" value="EXP-IND-2026-00981">
+        <button class="btn btn-primary" id="verifySearchBtn">Verify</button>
+      </div>
+    </div>
+
+    <!-- Hero Result -->
+    <div class="verify-hero" id="verifyHero">
+      <div class="verify-hero-badge">✓ DOCUTRADE VERIFIED</div>
+      <h1 class="verify-hero-title">Shipment Verified</h1>
+      <div class="verify-hero-id">EXP-IND-2026-00981</div>
+    </div>
+
+    <!-- Verification Checks -->
+    <div class="verify-checks">
+      <div class="verify-check-card pass">
+        <div class="check-icon">✓</div>
+        <div><div class="check-label">Shipment Verified</div><div class="check-detail">Created Aug 28, 2026</div></div>
+      </div>
+      <div class="verify-check-card pass">
+        <div class="check-icon">✓</div>
+        <div><div class="check-label">Documents Verified</div><div class="check-detail">5/5 documents approved</div></div>
+      </div>
+      <div class="verify-check-card pass">
+        <div class="check-icon">✓</div>
+        <div><div class="check-label">Exporter Verified</div><div class="check-detail">ABC Manufacturing Pvt. Ltd.</div></div>
+      </div>
+      <div class="verify-check-card info">
+        <div class="check-icon" style="background: rgba(226,118,27,0.2); color: var(--color-orange-400);">⛓</div>
+        <div><div class="check-label">Blockchain Proof</div><div class="check-detail">Anchored on Arbitrum</div></div>
+      </div>
+    </div>
+
+    <!-- Shipment Summary (public-safe info) -->
+    <div class="card verify-section">
+      <div class="card-header"><h4>Shipment Summary</h4></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-row"><span class="detail-label">Shipment ID</span><span class="detail-value mono" style="color:var(--color-cyan-400);">EXP-IND-2026-00981</span></div>
+          <div class="detail-row"><span class="detail-label">Status</span><span class="badge badge-dot badge-transit">In Transit</span></div>
+          <div class="detail-row"><span class="detail-label">Origin</span><span class="detail-value">India</span></div>
+          <div class="detail-row"><span class="detail-label">Destination</span><span class="detail-value">UAE</span></div>
+          <div class="detail-row"><span class="detail-label">Exporter</span><span class="detail-value">ABC Manufacturing Pvt. Ltd.</span></div>
+          <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">Aug 28, 2026</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents (public: only names + status, no download) -->
+    <div class="card verify-section">
+      <div class="card-header"><h4>Documents</h4></div>
+      <div class="card-body" style="padding: 0;">
+        <div class="table-container" style="border: none; border-radius: 0;">
+          <table class="table">
+            <thead><tr><th>Document</th><th>Status</th><th>Blockchain</th></tr></thead>
+            <tbody>
+              <tr><td>Commercial Invoice</td><td><span class="badge badge-dot badge-approved">Approved</span></td><td><span class="badge badge-blockchain">⛓ Anchored</span></td></tr>
+              <tr><td>Packing List</td><td><span class="badge badge-dot badge-approved">Approved</span></td><td><span class="badge badge-blockchain">⛓ Anchored</span></td></tr>
+              <tr><td>Certificate of Origin</td><td><span class="badge badge-dot badge-approved">Approved</span></td><td><span class="badge badge-blockchain">⛓ Anchored</span></td></tr>
+              <tr><td>Quality Certificate</td><td><span class="badge badge-dot badge-approved">Approved</span></td><td><span class="badge badge-blockchain">⛓ Anchored</span></td></tr>
+              <tr><td>Insurance Certificate</td><td><span class="badge badge-dot badge-approved">Approved</span></td><td><span class="badge badge-blockchain">⛓ Anchored</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Public Timeline -->
+    <div class="card verify-section">
+      <div class="card-header"><h4>Timeline</h4></div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="timeline-item"><div class="timeline-dot active"></div><div class="timeline-content"><div class="timeline-title">In Transit</div><div class="timeline-meta"><span>Aug 31, 2026</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Departed Port</div><div class="timeline-meta"><span>Aug 29, 2026</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">All Documents Approved</div><div class="timeline-meta"><span>Aug 29, 2026</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Documents Submitted</div><div class="timeline-meta"><span>Aug 28, 2026</span></div></div></div>
+          <div class="timeline-item"><div class="timeline-dot completed"></div><div class="timeline-content"><div class="timeline-title">Shipment Created</div><div class="timeline-meta"><span>Aug 28, 2026</span></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blockchain Proof -->
+    <div class="card verify-section">
+      <div class="card-header"><h4>⛓ Blockchain Proof</h4><span class="badge badge-blockchain">Arbitrum Sepolia</span></div>
+      <div class="card-body">
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <div class="detail-row"><span class="detail-label">Transaction</span><div class="hash-display">0x9b1d4f7a2e8c3b6d5a0f1e9c8b7a6d5e4c3b2a1f<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousSibling.textContent.trim())">📋</button></div></div>
+          <div class="detail-row"><span class="detail-label">Block</span><span class="detail-value mono" style="color:var(--color-cyan-400);">71,234,567</span></div>
+          <div class="detail-row"><span class="detail-label">Network</span><span class="detail-value">Arbitrum Sepolia (Chain ID: 421614)</span></div>
+          <div class="detail-row"><span class="detail-label">Timestamp</span><span class="detail-value">Aug 28, 2026 · 2:00:42 PM UTC</span></div>
+        </div>
+        <a href="#" class="btn btn-outline btn-sm w-full mt-4" style="justify-content: center;" target="_blank">View on Arbiscan ↗</a>
+      </div>
+    </div>
+
+    <!-- QR -->
+    <div class="card verify-section text-center">
+      <div class="card-body">
+        <div style="display: inline-block; padding: var(--space-4); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);">
+          <div style="width: 160px; height: 160px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 48px; border-radius: var(--radius-md);">📱</div>
+        </div>
+        <div class="mt-3 text-sm text-secondary">Scan QR code to verify this shipment</div>
+        <div class="hash-display mt-2" style="display: inline-flex; font-size: var(--text-xs);">/verify/EXP-IND-2026-00981</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="verify-footer">
+      <div class="verify-footer-text">
+        Verification powered by <strong style="color:var(--color-cyan-500);">DocuTrade</strong> · Web3 Verified<br>
+        <span style="margin-top: 4px; display: inline-block;">Blockchain: Arbitrum · Verification does not require an account</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

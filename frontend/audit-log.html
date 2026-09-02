@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Log — DocuTrade</title>
+  <meta name="description" content="Complete audit trail of all platform actions — logins, uploads, approvals, blockchain transactions, and more.">
+  <link rel="stylesheet" href="css/global.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div><nav class="sidebar-nav"><div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div><div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div><div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div><div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div><div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item active"><span class="nav-icon">📋</span> Audit Log</a></div><div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div></nav><div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar"><div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Audit Log</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Audit Log</span></div></div></div><div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div></header>
+      <div class="page-content">
+        <div class="page-header"><div class="page-header-left"><h2 class="page-title">Audit Log</h2><p class="page-subtitle">Complete record of all platform actions</p></div><div class="page-header-actions"><button class="btn btn-outline btn-sm">📥 Export CSV</button></div></div>
+
+        <div class="filter-bar">
+          <div class="search-box"><span class="search-icon">🔍</span><input type="text" class="form-input" placeholder="Search events..."></div>
+          <select class="form-select"><option value="">All Categories</option><option>Authentication</option><option>Shipment</option><option>Document</option><option>Blockchain</option><option>Tracking</option><option>Organization</option><option>Verification</option></select>
+          <select class="form-select"><option value="">All Users</option><option>Demo User</option><option>Inspector Patel</option><option>Global Shipping</option><option>System</option></select>
+          <select class="form-select"><option value="24">Last 24 hours</option><option value="7d" selected>Last 7 days</option><option value="30d">Last 30 days</option></select>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead><tr><th>Timestamp</th><th>Event</th><th>Category</th><th>User</th><th>Details</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 31, 6:22 PM</td><td><strong>Location Updated</strong></td><td><span class="badge badge-logistics">Tracking</span></td><td>System</td><td class="text-sm">EXP-00981: 18.42°N, 65.02°E</td><td class="font-mono text-xs text-tertiary">—</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 31, 6:15 PM</td><td><strong>Document Verified</strong></td><td><span class="badge badge-inspector">Verification</span></td><td>Demo User</td><td class="text-sm">Invoice verified — MATCH ✓</td><td class="font-mono text-xs text-tertiary">192.168.1.42</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 31, 5:30 PM</td><td><strong>Wallet Connected</strong></td><td><span class="badge badge-admin">Auth</span></td><td>Demo User</td><td class="text-sm">MetaMask 0x82F9...A72C on Arbitrum Sepolia</td><td class="font-mono text-xs text-tertiary">192.168.1.42</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 31, 5:28 PM</td><td><strong>User Logged In</strong></td><td><span class="badge badge-admin">Auth</span></td><td>Demo User</td><td class="text-sm">Email login</td><td class="font-mono text-xs text-tertiary">192.168.1.42</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 29, 2:30 PM</td><td><strong>Shipment Status Changed</strong></td><td><span class="badge badge-exporter">Shipment</span></td><td>Global Shipping</td><td class="text-sm">EXP-00981: APPROVED → IN_TRANSIT · TX: 0x2c7f...e4</td><td class="font-mono text-xs text-tertiary">10.0.0.15</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 29, 10:45 AM</td><td><strong>Blockchain TX Confirmed</strong></td><td><span class="badge badge-blockchain">Blockchain</span></td><td>System</td><td class="text-sm">DocumentApproved — Block 71,234,899</td><td class="font-mono text-xs text-tertiary">—</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 29, 10:42 AM</td><td><strong>Document Approved</strong></td><td><span class="badge badge-inspector">Document</span></td><td>Inspector Patel</td><td class="text-sm">Invoice v2 (EXP-00981) approved</td><td class="font-mono text-xs text-tertiary">10.0.0.20</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 28, 5:00 PM</td><td><strong>Document Rejected</strong></td><td><span class="badge badge-inspector">Document</span></td><td>Inspector Patel</td><td class="text-sm">Invoice v1 (EXP-00981) rejected — incorrect qty</td><td class="font-mono text-xs text-tertiary">10.0.0.20</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 28, 3:15 PM</td><td><strong>Document Uploaded</strong></td><td><span class="badge badge-exporter">Document</span></td><td>Demo User</td><td class="text-sm">5 documents uploaded for EXP-00981</td><td class="font-mono text-xs text-tertiary">192.168.1.42</td></tr>
+              <tr><td class="text-sm" style="white-space: nowrap;">Aug 28, 2:00 PM</td><td><strong>Shipment Created</strong></td><td><span class="badge badge-exporter">Shipment</span></td><td>Demo User</td><td class="text-sm">EXP-IND-2026-00981 created · TX: 0x9b1d...c3</td><td class="font-mono text-xs text-tertiary">192.168.1.42</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-4);"><span class="text-sm text-secondary">Showing 1-10 of 247 events</span><div class="pagination"><button class="pagination-btn" disabled>←</button><button class="pagination-btn active">1</button><button class="pagination-btn">2</button><button class="pagination-btn">3</button><button class="pagination-btn">...</button><button class="pagination-btn">25</button><button class="pagination-btn">→</button></div></div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+</body>
+</html>

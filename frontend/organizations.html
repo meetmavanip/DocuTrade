@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizations — DocuTrade</title>
+  <meta name="description" content="Manage verified organizations, exporters, inspectors, and logistics providers.">
+  <link rel="stylesheet" href="css/global.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo">D</div><div class="sidebar-brand-text"><span class="sidebar-brand-name">DOCUTRADE</span><span class="sidebar-brand-tagline">Web3 Verified</span></div></div><nav class="sidebar-nav"><div class="nav-section"><div class="nav-section-label">Overview</div><a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a></div><div class="nav-section"><div class="nav-section-label">Trade</div><a href="shipments.html" class="nav-item"><span class="nav-icon">📦</span> Shipments</a><a href="create-shipment.html" class="nav-item"><span class="nav-icon">➕</span> New Shipment</a><a href="documents.html" class="nav-item"><span class="nav-icon">📄</span> Documents</a><a href="document-verification.html" class="nav-item"><span class="nav-icon">🔍</span> Verify Document</a></div><div class="nav-section"><div class="nav-section-label">Tracking</div><a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a></div><div class="nav-section"><div class="nav-section-label">Blockchain</div><a href="blockchain.html" class="nav-item"><span class="nav-icon">⛓</span> Blockchain</a><a href="public-verify.html" class="nav-item"><span class="nav-icon">✅</span> Public Verify</a></div><div class="nav-section"><div class="nav-section-label">Admin</div><a href="organizations.html" class="nav-item active"><span class="nav-icon">🏢</span> Organizations</a><a href="analytics.html" class="nav-item"><span class="nav-icon">📈</span> Analytics</a><a href="audit-log.html" class="nav-item"><span class="nav-icon">📋</span> Audit Log</a></div><div class="nav-section"><div class="nav-section-label">Account</div><a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a></div></nav><div class="sidebar-footer"><div class="sidebar-network"><span class="sidebar-network-dot"></span><span class="sidebar-network-name">Arbitrum Sepolia</span></div></div></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="main-content">
+      <header class="topbar"><div class="topbar-left"><button class="sidebar-toggle" id="sidebarToggle">☰</button><div><h1 class="topbar-title">Organizations</h1><div class="topbar-breadcrumb"><a href="dashboard.html">Home</a><span class="separator">›</span><span class="current">Organizations</span></div></div></div><div class="topbar-right"><button class="btn btn-wallet" id="walletBtn"><span class="wallet-dot"></span><span id="walletAddress">Connect Wallet</span></button><div class="topbar-user"><div class="topbar-user-info"><div class="topbar-user-name" id="userName"></div><div class="topbar-user-role" id="userRole"></div></div><div class="avatar" id="userAvatar"></div></div></div></header>
+      <div class="page-content">
+        <div class="page-header"><div class="page-header-left"><h2 class="page-title">Organizations</h2><p class="page-subtitle">Manage registered organizations and blockchain permissions</p></div><div class="page-header-actions"><button class="btn btn-primary" id="addOrgBtn">+ Register Organization</button></div></div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead><tr><th>Organization</th><th>Type</th><th>Country</th><th>Wallet</th><th>Status</th><th>Blockchain</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>ABC Manufacturing Pvt. Ltd.</strong><br><span class="text-xs text-secondary">Rajkot, Gujarat</span></td>
+                <td><span class="badge badge-exporter badge-role">Exporter</span></td>
+                <td>🇮🇳 India</td>
+                <td><span class="font-mono text-xs">0x82F9...A72C</span></td>
+                <td><span class="badge badge-dot badge-verified">Verified</span></td>
+                <td><span class="badge badge-blockchain">⛓ Registered</span></td>
+                <td><button class="btn btn-ghost btn-sm">Manage</button></td>
+              </tr>
+              <tr>
+                <td><strong>XYZ Imports LLC</strong><br><span class="text-xs text-secondary">Dubai, UAE</span></td>
+                <td><span class="badge badge-buyer badge-role">Buyer</span></td>
+                <td>🇦🇪 UAE</td>
+                <td><span class="font-mono text-xs">0x4A1B...D83E</span></td>
+                <td><span class="badge badge-dot badge-verified">Verified</span></td>
+                <td><span class="badge badge-blockchain">⛓ Registered</span></td>
+                <td><button class="btn btn-ghost btn-sm">Manage</button></td>
+              </tr>
+              <tr>
+                <td><strong>Global Shipping Corp</strong><br><span class="text-xs text-secondary">Mumbai, India</span></td>
+                <td><span class="badge badge-logistics badge-role">Logistics</span></td>
+                <td>🇮🇳 India</td>
+                <td><span class="font-mono text-xs">0x9C2D...F15A</span></td>
+                <td><span class="badge badge-dot badge-verified">Verified</span></td>
+                <td><span class="badge badge-blockchain">⛓ Registered</span></td>
+                <td><button class="btn btn-ghost btn-sm">Manage</button></td>
+              </tr>
+              <tr>
+                <td><strong>QualityCert India</strong><br><span class="text-xs text-secondary">Ahmedabad, Gujarat</span></td>
+                <td><span class="badge badge-inspector badge-role">Inspector</span></td>
+                <td>🇮🇳 India</td>
+                <td><span class="font-mono text-xs">0x7E3F...B94C</span></td>
+                <td><span class="badge badge-dot badge-pending">Pending</span></td>
+                <td><span class="badge badge-draft">—</span></td>
+                <td><div style="display: flex; gap: 4px;"><button class="btn btn-success btn-sm">Verify</button><button class="btn btn-ghost btn-sm">View</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/wallet.js"></script><script src="js/notifications.js"></script><script src="js/app.js"></script>
+</body>
+</html>
